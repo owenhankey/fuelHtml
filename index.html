@@ -154,6 +154,8 @@
                 costGroup.style.display = "none";
                 totalPaidGroup.style.display = "none";
                 totalKmsInput.disabled = false;
+                kmsInput.disabled = false;
+                fuelEconomyInput.disabled = false;
             }
         });
 
@@ -161,20 +163,27 @@
         const costGroup = document.getElementById("costGroup");
         const totalPaidGroup = document.getElementById("totalPaidGroup");
         const totalKmsInput = document.getElementById("totalKms");
+        const kmsInput = document.getElementById("kms");
+        const fuelEconomyInput = document.getElementById("fuelEconomy");
 
         paidCheckbox.addEventListener("change", function () {
             if (paidCheckbox.checked) {
                 costGroup.style.display = "block";
                 totalPaidGroup.style.display = "block";
                 totalKmsInput.disabled = true;
+                kmsInput.disabled = true;
+                fuelEconomyInput.disabled = true;
             } else {
                 costGroup.style.display = "none";
                 totalPaidGroup.style.display = "none";
                 totalKmsInput.disabled = false;
+                kmsInput.disabled = false;
+                fuelEconomyInput.disabled = false;
             }
         });
     </script>
 </body>
 
 </html>
+
 
