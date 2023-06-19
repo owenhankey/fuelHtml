@@ -2,25 +2,110 @@
 <html>
 
 <head>
-    <title>Expense Tracker</title>
+    <title>Fuel Expenses</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+        body {
+            font-family: "Orbitron", sans-serif;
+            background-color: #f1f1f1;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: transparent;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
         .form-row {
+            display: flex;
+            align-items: center;
             margin-bottom: 10px;
         }
 
+        .form-row label {
+            width: 180px;
+            margin-right: 10px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
         .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             margin-top: 10px;
         }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .data-table .header-cell {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .hidden {
+            display: none;
+        }
+
     </style>
 </head>
 
 <body>
-    <h1>Expense Tracker</h1>
+    <h1>Fuel Expenses</h1>
 
     <form id="expenseForm">
         <div class="form-row">
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
+            <select id="name" name="name">
+                <option value="Owen">Owen</option>
+                <option value="Anthea">Anthea</option>
+                <option value="Athol">Athol</option>
+                <option value="Norman">Norman</option>
+            </select>
         </div>
 
         <div class="form-row">
@@ -38,55 +123,56 @@
             <input type="checkbox" id="paid" name="paid">
         </div>
 
-        <div class="form-row">
-            <label for="cost">Cost:</label>
-            <input type="number" id="cost" name="cost" step="any" required>
+        <div class="form-row hidden" id="costGroup">
+            <label for="cost">Cost (€/litre):</label>
+            <input type="number" id="cost" name="cost" step="any">
         </div>
 
-        <div class="form-row">
-            <label for="totalPaid">Total Paid:</label>
-            <input type="number" id="totalPaid" name="totalPaid" step="any" required>
+        <div class="form-row hidden" id="totalPaidGroup">
+            <label for="totalPaid">Total Paid (€):</label>
+            <input type="number" id="totalPaid" name="totalPaid" step="any">
         </div>
 
-        <button type="submit" class="submit-btn">Submit</button>
+        <input type="submit" class="submit-btn" value="Submit">
     </form>
 
     <script>
-        const expenseForm = document.getElementById("expenseForm");
-        const paidCheckbox = document.getElementById("paid");
+        const expenseForm = document.getElementById('expenseForm');
+        const paidCheckbox = document.getElementById('paid');
+        const costGroup = document.getElementById('costGroup');
+        const totalPaidGroup = document.getElementById('totalPaidGroup');
+        const kmsInput = document.getElementById('kms');
+        const fuelEconomyInput = document.getElementById('fuelEconomy');
 
-        expenseForm.addEventListener("submit", function (event) {
+        paidCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                kmsInput.disabled = true;
+                fuelEconomyInput.disabled = true;
+                costGroup.classList.remove('hidden');
+                totalPaidGroup.classList.remove('hidden');
+            } else {
+                kmsInput.disabled = false;
+                fuelEconomyInput.disabled = false;
+                costGroup.classList.add('hidden');
+                totalPaidGroup.classList.add('hidden');
+            }
+        });
+
+        expenseForm.addEventListener('submit', function (event) {
             event.preventDefault();
+            const formData = new FormData(this);
+            const params = new URLSearchParams(formData).toString();
+            const url = paidCheckbox.checked ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid' : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
-            const formData = new FormData(expenseForm);
-            const name = formData.get("name");
-            const kms = formData.get("kms");
-            const fuelEconomy = formData.get("fuelEconomy");
-            const paid = paidCheckbox.checked;
-            const cost = formData.get("cost");
-            const totalPaid = formData.get("totalPaid");
-
-            const requestUrl = paid ? "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid" : "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy";
-
-            const params = new URLSearchParams();
-            params.append("name", name);
-            params.append("kms", kms);
-            params.append("fuelEconomy", fuelEconomy);
-            params.append("paid", paid);
-            params.append("cost", cost);
-            params.append("totalPaid", totalPaid);
-
-            fetch(`${requestUrl}?${params}`)
-                .then(response => {
-                    if (response.ok) {
-                        console.log("Data sent successfully");
-                        expenseForm.reset();
-                    } else {
-                        console.log("Failed to send data");
-                    }
+            fetch(url + '?' + params)
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response data as needed
+                    console.log(data);
                 })
                 .catch(error => {
-                    console.log("Error sending data:", error);
+                    // Handle any errors that occurred during the request
+                    console.error(error);
                 });
         });
     </script>
