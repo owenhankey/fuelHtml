@@ -4,186 +4,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico&display=swap">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      max-width: 400px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: #ffffff;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 5px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-top: 0;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    .form-group .checkbox-label {
-      font-weight: normal;
-      margin-top: 8px;
-    }
-
-    .form-group .checkbox-label input {
-      margin-right: 5px;
-    }
-
-    .form-group .submit-btn {
-      margin-top: 10px;
-    }
-
-    .success-message {
-      display: none;
-      color: green;
-      margin-top: 10px;
-      text-align: center;
-    }
+    /* CSS styles here */
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>Fuel Payment Form</h1>
+    <h2>Fuel Payment Form</h2>
     <form id="fuelForm">
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <select name="name" id="name" required>
-          <option value="">Select Name</option>
-          <option value="Owen">Owen</option>
-          <option value="Anthea">Anthea</option>
-          <option value="Athol">Athol</option>
-          <option value="Norman">Norman</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="kms">Kilometers Driven:</label>
-        <input type="number" name="kms" id="kms" required>
-      </div>
-      <div class="form-group">
-        <label for="fuelEconomy">Fuel Economy (km/L):</label>
-        <input type="number" name="fuelEconomy" id="fuelEconomy" required>
-      </div>
-      <div class="form-group">
-        <label for="totalKms">Total Kilometers:</label>
-        <input type="number" name="totalKms" id="totalKms" required>
-      </div>
-      <div class="form-group">
-        <label for="paid">Paid:</label>
-        <input type="checkbox" name="paid" id="paid">
-      </div>
-      <div class="form-group">
-        <label for="totalPaid">Total Paid:</label>
-        <input type="number" name="totalPaid" id="totalPaid" disabled>
-      </div>
-      <div class="form-group">
-        <label for="cost">Cost:</label>
-        <input type="number" name="cost" id="cost" required>
-      </div>
-      <div class="form-group submit-btn">
-        <button type="submit">Submit</button>
-      </div>
+      <!-- Form fields here -->
     </form>
-    <p class="success-message" id="successMessage">Form submitted successfully!</p>
   </div>
 
   <script>
-    const form = document.getElementById("fuelForm");
-    const paidCheckbox = document.getElementById("paid");
-    const totalPaidInput = document.getElementById("totalPaid");
-    const successMessage = document.getElementById("successMessage");
+    // JavaScript code here
 
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
+    const form = document.getElementById('fuelForm');
+    const paidCheckbox = document.getElementById('paid');
+    const totalPaidInput = document.getElementById('totalPaid');
+    const costInput = document.getElementById('cost');
 
-      if (paidCheckbox.checked) {
-        sendPostRequest(data);
-      } else {
-        sendGetRequest(data);
-      }
+    paidCheckbox.addEventListener('change', function () {
+      // Code for paid checkbox change event here
     });
 
-    paidCheckbox.addEventListener("change", function () {
-      totalPaidInput.disabled = !paidCheckbox.checked;
-    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
 
-    function sendPostRequest(data) {
-      const url = "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fulePaid";
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
+      const name = document.getElementById('name').value;
+      const kms = document.getElementById('kms').value;
+      const fuelEconomy = document.getElementById('fuelEconomy').value;
+      const totalKms = document.getElementById('totalKms').value;
+      const paid = document.getElementById('paid').checked;
+      const totalPaid = document.getElementById('totalPaid').value;
+      const cost = document.getElementById('cost').value;
+
+      const requestData = {
+        name,
+        kms: paid ? '' : kms,
+        fuelEconomy: paid ? '' : fuelEconomy,
+        totalKms: paid ? '' : totalKms,
+        paid,
+        totalPaid: paid ? totalPaid : '',
+        cost: paid ? cost : ''
       };
 
-      fetch(url, requestOptions)
-        .then(response => {
-          if (response.ok) {
-            showSuccessMessage();
-          } else {
-            console.error("Error:", response.statusText);
-          }
-        })
-        .catch(error => {
-          console.error("Error:", error);
-        });
-    }
+      const url = paid
+        ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fulePaid'
+        : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
-    function sendGetRequest(data) {
-      const url = "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy";
-      const queryString = Object.entries(data)
+      const method = paid ? 'POST' : 'GET';
+
+      // Build the query parameters for GET request
+      const queryParams = Object.entries(requestData)
+        .filter(([key, value]) => value !== '')
         .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join("&");
-      const requestUrl = `${url}?${queryString}`;
+        .join('&');
 
-      fetch(requestUrl)
-        .then(response => {
-          if (response.ok) {
-            showSuccessMessage();
-          } else {
-            console.error("Error:", response.statusText);
-          }
+      const finalUrl = method === 'GET' ? `${url}?${queryParams}` : url;
+
+      fetch(finalUrl, {
+        method,
+        body: method === 'POST' ? JSON.stringify(requestData) : undefined
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Response:', data);
+          alert('Form submitted successfully!');
+          form.reset();
+          totalPaidInput.disabled = true;
+          costInput.disabled = true;
         })
         .catch(error => {
-          console.error("Error:", error);
+          console.error('Error:', error);
+          alert('An error occurred while submitting the form. Please try again.');
         });
-    }
-
-    function showSuccessMessage() {
-      successMessage.style.display = "block";
-      setTimeout(function () {
-        successMessage.style.display = "none";
-      }, 3000);
-    }
+    });
   </script>
 </body>
 
 </html>
-
