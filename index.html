@@ -104,21 +104,24 @@
         <label for="fuelEconomy">Fuel Economy (l/100km):</label>
         <input type="number" id="fuelEconomy" name="fuelEconomy" step="any" required>
 
-        <label for="kms">Kilometers:</label>
-        <input type="number" id="kms" name="kms" step="any" required>
-
-        <div>
-            <label for="paid">Paid:</label>
-            <input type="checkbox" id="paid" name="paid">
+        <div style="display: flex;">
+            <div style="flex: 1;">
+                <label for="kms">Kilometers:</label>
+                <input type="number" id="kms" name="kms" step="any" required>
+            </div>
+            <div style="flex: 1;">
+                <label for="paid">Paid:</label>
+                <input type="checkbox" id="paid" name="paid">
+            </div>
         </div>
 
         <div id="costGroup" style="display: none;">
-            <label for="cost">Cost (€/litre):</label>
+            <label for="cost">Cost (€/L):</label>
             <input type="number" id="cost" name="cost" step="any">
         </div>
 
         <div id="totalPaidGroup" style="display: none;">
-            <label for="totalPaid">Total Paid:</label>
+            <label for="totalPaid">Total Paid (€):</label>
             <input type="number" id="totalPaid" name="totalPaid" step="any">
         </div>
 
