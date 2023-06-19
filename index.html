@@ -99,15 +99,6 @@
             font-size: 14px;
         }
 
-        .error-message {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #f00;
-            background-color: #ffebeb;
-            color: #f00;
-            font-size: 14px;
-        }
-
     </style>
 </head>
 
@@ -131,7 +122,7 @@
         </div>
 
         <div class="form-row">
-            <label for="fuelEconomy">Fuel Economy (litres/100km):</label>
+            <label for="fuelEconomy">Fuel Economy (l/100km):</label>
             <input type="number" id="fuelEconomy" name="fuelEconomy" step="any" required>
         </div>
 
@@ -154,7 +145,6 @@
     </form>
 
     <div id="confirmationMessage" class="confirmation-message hidden"></div>
-    <div id="errorMessage" class="error-message hidden"></div>
 
     <script>
         const expenseForm = document.getElementById('expenseForm');
@@ -164,7 +154,6 @@
         const kmsInput = document.getElementById('kms');
         const fuelEconomyInput = document.getElementById('fuelEconomy');
         const confirmationMessage = document.getElementById('confirmationMessage');
-        const errorMessage = document.getElementById('errorMessage');
 
         paidCheckbox.addEventListener('change', function () {
             if (this.checked) {
@@ -194,22 +183,17 @@
 
             if (confirm('Are you sure?')) {
                 fetch(url + '?' + params, { mode: 'no-cors' })
-                    .then(response => {
-                        if (response.ok) {
-                            if (paidCheckbox.checked) {
-                                const tripCost = parseFloat(kmsInput.value) * parseFloat(fuelEconomyInput.value) * 1.55;
-                                confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
-                            } else {
-                                confirmationMessage.innerHTML = 'Data submitted successfully!';
-                            }
+                    .then(() => {
+                        if (paidCheckbox.checked) {
+                            const tripCost = parseFloat(kmsInput.value) * parseFloat(fuelEconomyInput.value) * 1.55;
+                            confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
                         } else {
-                            throw new Error(response.statusText);
+                            confirmationMessage.innerHTML = 'Data submitted successfully!';
                         }
                     })
                     .catch(error => {
-                        errorMessage.innerHTML = `An error occurred while submitting the data: ${error.message}`;
-                        errorMessage.classList.remove('hidden');
-                        confirmationMessage.classList.add('hidden');
+                        console.error(error);
+                        confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
                     });
             } else {
                 confirmationMessage.classList.add('hidden');
