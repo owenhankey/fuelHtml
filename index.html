@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico&display=swap">
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
   <style>
     body {
       background-color: #f0f0f0;
-      font-family: 'Pacifico', cursive;
+      font-family: 'Roboto', sans-serif;
       margin: 0;
       padding: 0;
     }
@@ -180,6 +180,15 @@
       };
 
       xhr.send(JSON.stringify(requestData));
+    });
+
+    paidElement.addEventListener('change', function () {
+      const isChecked = paidElement.checked;
+      totalPaidElement.disabled = !isChecked;
+      costElement.disabled = !isChecked;
+      kmsElement.disabled = isChecked;
+      fuelEconomyElement.disabled = isChecked;
+      totalKmsElement.disabled = isChecked;
     });
   </script>
 </body>
