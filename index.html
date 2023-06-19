@@ -46,6 +46,11 @@
       margin-bottom: 10px;
     }
 
+    .inline-checkbox {
+      display: inline-flex;
+      align-items: center;
+    }
+
     button[type="submit"] {
       padding: 10px;
       background-color: #4caf50;
@@ -96,25 +101,30 @@
       <label for="totalKms">Total Kilometers:</label>
       <input type="number" id="totalKms" name="totalKms" required>
 
-      <input type="checkbox" id="paid" name="paid">
-      <label for="paid">Paid</label>
+      <label for="paid">Paid:</label>
+      <div class="inline-checkbox">
+        <input type="checkbox" id="paid" name="paid">
+        <label for="paid">Yes</label>
+      </div>
 
       <label for="cost">Cost (€/litre):</label>
       <input type="number" id="cost" name="cost">
 
+      <label for="totalPaid">Total Paid (€):</label>
+      <input type="number" id="totalPaid" name="totalPaid">
+
       <button type="submit">Submit</button>
     </form>
 
-    <div id="message" class="message"></div>
+    <div id="messageDiv"></div>
   </div>
 
   <script>
     const form = document.getElementById("expenseForm");
-    const messageDiv = document.getElementById("message");
+    const messageDiv = document.getElementById("messageDiv");
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      messageDiv.innerHTML = ""; // Clear previous message
 
       const formData = new FormData(form);
       const name = formData.get("name");
@@ -123,17 +133,19 @@
       const totalKms = formData.get("totalKms");
       const paid = formData.get("paid");
       const cost = formData.get("cost");
+      const totalPaid = formData.get("totalPaid");
 
       const message = `Name: ${name}<br>
         Kilometers: ${kms}<br>
-        Fuel Economy: ${fuelEconomy}<br>
+        Fuel Economy: ${fuelEconomy} (l/100km)<br>
         Total Kilometers: ${totalKms}<br>
-        Paid: ${paid}<br>
-        Cost: ${cost}`;
+        Paid: ${paid ? "Yes" : "No"}<br>
+        Cost: ${cost ? cost + " (€/litre)" : "N/A"}<br>
+        Total Paid: ${totalPaid ? totalPaid + " (€)" : "N/A"}`;
 
       if (confirm(`Are you sure?\n\n${message}`)) {
         if (paid) {
-          // Perform POST request to fulePaid endpoint
+          // Perform POST request to fuelPaid endpoint
           // Replace the API endpoint with your actual endpoint URL
           fetch("https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid", {
             method: "POST",
@@ -149,7 +161,10 @@
         } else {
           // Perform GET request to fuelEconomy endpoint
           // Replace the API endpoint with your actual endpoint URL
-          fetch("https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?" + new URLSearchParams(formData))
+          fetch(
+            "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?" +
+              new URLSearchParams(formData)
+          )
             .then(() => {
               showMessage("Data submitted successfully!", "success");
               form.reset();
