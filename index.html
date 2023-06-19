@@ -26,32 +26,36 @@
             background-color: transparent;
         }
 
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
         .form-row {
+            display: flex;
+            align-items: center;
             margin-bottom: 10px;
         }
 
-        label {
-            display: inline-block;
-            width: 150px;
-            color: #333;
+        .form-row label {
+            width: 180px;
+            margin-right: 10px;
         }
 
         input[type="text"],
         input[type="number"] {
-            width: calc(100% - 160px);
+            flex: 1;
             padding: 10px;
             border-radius: 5px;
             border: 1px solid #ccc;
-            margin-left: 10px;
         }
 
         input[type="checkbox"] {
-            vertical-align: middle;
-            margin-left: 10px;
+            margin-right: 5px;
         }
 
-        .submit-btn,
-        .view-btn {
+        .submit-btn {
             width: 100%;
             padding: 10px;
             background-color: #4CAF50;
@@ -62,13 +66,23 @@
             margin-top: 10px;
         }
 
-        .view-btn {
-            background-color: #333;
+        .submit-btn:hover {
+            background-color: #45a049;
         }
 
-        .submit-btn:hover,
+        .view-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
         .view-btn:hover {
-            background-color: #45a049;
+            background-color: #555;
         }
 
         .data-table {
@@ -80,13 +94,14 @@
         .data-table th,
         .data-table td {
             padding: 8px;
-            border-bottom: 1px solid #ddd;
+            border: 1px solid #ccc;
         }
 
         .data-table .header-cell {
             font-weight: bold;
             text-align: left;
         }
+
     </style>
 </head>
 
@@ -121,77 +136,51 @@
 
         <div class="form-row" id="costGroup" style="display: none;">
             <label for="cost">Cost (€/litre):</label>
-            <input type="number" id="cost" name="cost" step="any">
+            <input type="number" id="cost" name="cost" step="any" disabled>
         </div>
 
         <div class="form-row" id="totalPaidGroup" style="display: none;">
             <label for="totalPaid">Total Paid:</label>
-            <input type="number" id="totalPaid" name="totalPaid" step="any">
+            <input type="number" id="totalPaid" name="totalPaid" step="any" disabled>
         </div>
 
         <button class="submit-btn" type="submit">Submit</button>
-        <button class="view-btn" onclick="fetchData()">View Data</button>
+        <button class="view-btn" id="viewDataBtn">View Data</button>
     </form>
 
-    <div id="dataContainer"></div>
+    <table class="data-table" id="dataTable" style="display: none;">
+        <thead>
+            <tr>
+                <th class="header-cell">Name</th>
+                <th class="header-cell">Kilometers</th>
+                <th class="header-cell">Fuel Economy</th>
+                <th class="header-cell">Total Kilometers</th>
+                <th class="header-cell">Paid</th>
+                <th class="header-cell">Cost</th>
+                <th class="header-cell">Total Paid</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
     <script>
-        function fetchData() {
-            fetch("https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData")
-                .then(response => response.json())
-                .then(data => displayData(data))
-                .catch(error => console.log(error));
-        }
-
-        function displayData(data) {
-            const dataContainer = document.getElementById("dataContainer");
-            dataContainer.innerHTML = "";
-
-            if (data.length === 0) {
-                const noDataMessage = document.createElement("p");
-                noDataMessage.textContent = "No data available.";
-                dataContainer.appendChild(noDataMessage);
-                return;
-            }
-
-            const table = document.createElement("table");
-            table.className = "data-table";
-
-            // Create table header
-            const tableHeader = document.createElement("thead");
-            const headerRow = document.createElement("tr");
-            const headers = Object.keys(data[0]);
-
-            headers.forEach(header => {
-                const headerCell = document.createElement("th");
-                headerCell.textContent = header;
-                headerCell.className = "header-cell";
-                headerRow.appendChild(headerCell);
-            });
-
-            tableHeader.appendChild(headerRow);
-            table.appendChild(tableHeader);
-
-            // Create table body
-            const tableBody = document.createElement("tbody");
-
-            data.forEach(item => {
-                const row = document.createElement("tr");
-
-                headers.forEach(header => {
-                    const cell = document.createElement("td");
-                    cell.textContent = item[header];
-                    row.appendChild(cell);
-                });
-
-                tableBody.appendChild(row);
-            });
-
-            table.appendChild(tableBody);
-            dataContainer.appendChild(table);
-        }
-
         const expenseForm = document.getElementById("expenseForm");
+        const viewDataBtn = document.getElementById("viewDataBtn");
+        const dataTable = document.getElementById("dataTable");
+        const paidCheckbox = document.getElementById("paid");
+        const costInput = document.getElementById("cost");
+        const totalPaidInput = document.getElementById("totalPaid");
+
+        paidCheckbox.addEventListener("change", function () {
+            const isChecked = paidCheckbox.checked;
+            costInput.disabled = !isChecked;
+            totalPaidInput.disabled = !isChecked;
+
+            if (!isChecked) {
+                costInput.value = "";
+                totalPaidInput.value = "";
+            }
+        });
 
         expenseForm.addEventListener("submit", function (event) {
             event.preventDefault();
@@ -223,29 +212,13 @@
                     const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?${params}`;
                     window.location.href = url;
                 }
-
-                // Clear form inputs
-                document.getElementById("name").value = "";
-                document.getElementById("kms").value = "";
-                document.getElementById("fuelEconomy").value = "";
-                document.getElementById("paid").checked = false;
-                document.getElementById("cost").value = "";
-                document.getElementById("totalPaid").value = "";
             }
         });
 
-        document.getElementById("paid").addEventListener("change", function () {
-            const costGroup = document.getElementById("costGroup");
-            const totalPaidGroup = document.getElementById("totalPaidGroup");
-
-            if (this.checked) {
-                costGroup.style.display = "block";
-                totalPaidGroup.style.display = "block";
-            } else {
-                costGroup.style.display = "none";
-                totalPaidGroup.style.display = "none";
-            }
+        viewDataBtn.addEventListener("click", function () {
+            dataTable.style.display = "block";
         });
+
     </script>
 </body>
 
