@@ -1,120 +1,100 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
   <title>Fuel Expenses</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-
-    /* Additional CSS for custom styling */
     body {
-      font-family: 'Orbitron', sans-serif;
-      background-color: #f4f4f4;
+      font-family: "Orbitron", sans-serif;
+      background-color: #f1f1f1;
       padding: 20px;
-      text-align: center;
     }
 
-    .container {
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      background-color: #fff;
       max-width: 400px;
       margin: 0 auto;
+      padding: 20px;
+      border-radius: 5px;
     }
 
-    .header {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-      text-align: left;
-    }
-
-    .form-group label {
+    label {
       display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
+      color: #333;
     }
 
-    .form-group input,
-    .form-group select {
+    input[type="text"],
+    input[type="number"] {
       width: 100%;
-      padding: 8px;
-      font-size: 16px;
-      border-radius: 4px;
+      padding: 10px;
+      border-radius: 5px;
       border: 1px solid #ccc;
-      box-sizing: border-box;
     }
 
-    .form-group input[type="checkbox"] {
-      display: inline-block;
-      width: auto;
+    input[type="checkbox"] {
+      margin-top: 10px;
     }
 
-    button[type="submit"] {
+    .submit-btn {
+      width: 100%;
+      padding: 10px;
       background-color: #4CAF50;
       color: #fff;
-      padding: 10px 20px;
-      font-size: 16px;
       border: none;
-      border-radius: 4px;
+      border-radius: 5px;
       cursor: pointer;
     }
 
-    button[type="submit"]:hover {
+    .submit-btn:hover {
       background-color: #45a049;
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1 class="header">Fuel Expenses</h1>
-    <form id="expenseForm">
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <select id="name" name="name">
-          <option value="Owen">Owen</option>
-          <option value="Anthea">Anthea</option>
-          <option value="Athol">Athol</option>
-          <option value="Norman">Norman</option>
-        </select>
-      </div>
+  <h1>Fuel Expenses</h1>
 
-      <div class="form-group">
-        <label for="kms">Kilometers:</label>
-        <input type="number" id="kms" name="kms">
-      </div>
+  <form id="expenseForm">
+    <label for="name">Name:</label>
+    <select id="name" name="name">
+      <option value="Owen">Owen</option>
+      <option value="Anthea">Anthea</option>
+      <option value="Athol">Athol</option>
+      <option value="Norman">Norman</option>
+    </select>
 
-      <div class="form-group">
-        <label for="fuelEconomy">Fuel Economy (l/100km):</label>
-        <input type="number" id="fuelEconomy" name="fuelEconomy" step="0.01">
-      </div>
+    <label for="kms">Kilometers:</label>
+    <input type="number" id="kms" name="kms" step="any" required>
 
-      <div class="form-group">
-        <label for="totalKms">Total Kilometers:</label>
-        <input type="number" id="totalKms" name="totalKms">
-      </div>
+    <label for="fuelEconomy">Fuel Economy (l/100km):</label>
+    <input type="number" id="fuelEconomy" name="fuelEconomy" step="any" required>
 
-      <div class="form-group">
-        <label for="paid">Paid:</label>
-        <input type="checkbox" id="paid" name="paid">
-      </div>
+    <label for="totalKms">Total Kilometers:</label>
+    <input type="number" id="totalKms" name="totalKms" step="any" required>
 
-      <div class="form-group" id="costGroup" style="display: none;">
-        <label for="cost">Cost (€/litre):</label>
-        <input type="number" id="cost" name="cost" step="0.01">
-      </div>
+    <div>
+      <input type="checkbox" id="paid" name="paid">
+      <label for="paid">Paid</label>
+    </div>
 
-      <div class="form-group" id="totalPaidGroup" style="display: none;">
-        <label for="totalPaid">Total Paid:</label>
-        <input type="number" id="totalPaid" name="totalPaid" step="0.01">
-      </div>
+    <div id="costGroup" style="display: none;">
+      <label for="cost">Cost (€/litre):</label>
+      <input type="number" id="cost" name="cost" step="any">
+    </div>
 
-      <button type="submit">Submit</button>
-      <button type="button" onclick="window.location.href='data.html'">View Data</button>
-    </form>
-  </div>
+    <div id="totalPaidGroup" style="display: none;">
+      <label for="totalPaid">Total Paid:</label>
+      <input type="number" id="totalPaid" name="totalPaid" step="any">
+    </div>
+
+    <button class="submit-btn" type="submit">Submit</button>
+  </form>
 
   <script>
     const expenseForm = document.getElementById("expenseForm");
@@ -147,6 +127,16 @@
       console.log(formData); // Display form data in the console
 
       if (confirm("Are you sure you want to submit the following data?\n\n" + JSON.stringify(formData, null, 2))) {
+        if (paid) {
+          const params = new URLSearchParams(formData).toString();
+          const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid?${params}`;
+          window.location.href = url;
+        } else {
+          const params = new URLSearchParams(formData).toString();
+          const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?${params}`;
+          window.location.href = url;
+        }
+
         expenseForm.reset();
         costGroup.style.display = "none";
         totalPaidGroup.style.display = "none";
@@ -181,3 +171,4 @@
 </body>
 
 </html>
+
