@@ -1,63 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Expense Form</title>
+  <title>Fuel Payment Form</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    function toggleFields() {
-      const paidCheckbox = document.getElementById("paid");
-      const totalPaidField = document.getElementById("totalPaid");
-      const costField = document.getElementById("cost");
-      const kmsField = document.getElementById("kms");
-      const fuelField = document.getElementById("fuel");
-      const totalKmsField = document.getElementById("totalKms");
-
-      if (paidCheckbox.checked) {
-        totalPaidField.required = true;
-        costField.required = true;
-        kmsField.required = false;
-        fuelField.required = false;
-        totalKmsField.required = false;
-        kmsField.disabled = true;
-        fuelField.disabled = true;
-        totalKmsField.disabled = true;
+    function submitForm() {
+      var isPaid = document.getElementById("paid").checked;
+      var fuelPaidURL = "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fulePaid";
+      var fuelEconomyURL = "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy";
+      
+      if (isPaid) {
+        $.ajax({
+          type: "POST",
+          url: fuelPaidURL,
+          data: $("#fuelForm").serialize(),  // Serializes the form data
+          success: function(response) {
+            console.log("POST request sent to " + fuelPaidURL);
+            // Handle the success response if needed
+          },
+          error: function(error) {
+            console.log("Error sending POST request to " + fuelPaidURL);
+            // Handle the error response if needed
+          }
+        });
       } else {
-        totalPaidField.required = false;
-        costField.required = false;
-        kmsField.required = true;
-        fuelField.required = true;
-        totalKmsField.required = true;
-        kmsField.disabled = false;
-        fuelField.disabled = false;
-        totalKmsField.disabled = false;
+        $.ajax({
+          type: "GET",
+          url: fuelEconomyURL,
+          success: function(response) {
+            console.log("GET request sent to " + fuelEconomyURL);
+            // Handle the success response if needed
+          },
+          error: function(error) {
+            console.log("Error sending GET request to " + fuelEconomyURL);
+            // Handle the error response if needed
+          }
+        });
       }
     }
   </script>
 </head>
 <body>
-  <h1>Expense Form</h1>
-  <form>
+  <h1>Fuel Payment Form</h1>
+  <form id="fuelForm">
     <label for="name">Name:</label>
     <input type="text" id="name" name="name" required><br><br>
-
-    <label for="kms">Kilometers Driven:</label>
+    
+    <label for="kms">KMs:</label>
     <input type="number" id="kms" name="kms" required><br><br>
-
-    <label for="fuel">Fuel Economy:</label>
-    <input type="number" id="fuel" name="fuel" required><br><br>
-
-    <label for="totalKms">Total Kilometers:</label>
+    
+    <label for="fuelEconomy">Fuel Economy:</label>
+    <input type="number" id="fuelEconomy" name="fuelEconomy" required><br><br>
+    
+    <label for="totalKms">Total KMs:</label>
     <input type="number" id="totalKms" name="totalKms" required><br><br>
-
+    
     <label for="paid">Paid:</label>
-    <input type="checkbox" id="paid" name="paid" onclick="toggleFields()"><br><br>
-
-    <label for="totalPaid">Total Paid:</label>
-    <input type="number" id="totalPaid" name="totalPaid" disabled><br><br>
-
+    <input type="checkbox" id="paid" name="paid"><br><br>
+    
     <label for="cost">Cost:</label>
-    <input type="number" id="cost" name="cost" disabled><br><br>
-
-    <input type="submit" value="Submit">
+    <input type="number" id="cost" name="cost"><br><br>
+    
+    <button type="button" onclick="submitForm()">Submit</button>
   </form>
 </body>
 </html>
