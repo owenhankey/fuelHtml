@@ -99,21 +99,6 @@
             font-size: 14px;
         }
 
-        .return-code {
-            margin-top: 10px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .response-data {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            font-size: 14px;
-            white-space: pre-wrap;
-        }
-
     </style>
 </head>
 
@@ -160,8 +145,6 @@
     </form>
 
     <div id="confirmationMessage" class="confirmation-message hidden"></div>
-    <div id="returnCode" class="return-code hidden"></div>
-    <div id="responseData" class="response-data hidden"></div>
 
     <script>
         const expenseForm = document.getElementById('expenseForm');
@@ -190,26 +173,27 @@
             event.preventDefault();
             const formData = new FormData(this);
             const params = new URLSearchParams(formData).toString();
-            const url = paidCheckbox.checked ?
-                'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid' :
-                'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
+            const url = 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
             const confirmationText = `Are you sure you want to submit the following data?<br><br>${params}`;
             confirmationMessage.innerHTML = confirmationText;
             confirmationMessage.classList.remove('hidden');
 
             if (confirm('Are you sure?')) {
-                fetch(url + '?' + params, { mode: 'no-cors' })
-                    .then(response => {
-                        if (response.ok) {
-                            return response.text();
-                        } else {
-                            throw new Error('Request failed');
-                        }
-                    })
-                    .then(data => {
-                        console.log(data); // Display the response text in the console
+                fetch(url + '?' + params, {
+                    mode: 'no-cors'
+                })
+                    .then(() => {
                         confirmationMessage.innerHTML = 'Data submitted successfully!';
+                        if (!paidCheckbox.checked) {
+                            const costPerLitre = 1.55;
+                            const distance = parseFloat(kmsInput.value);
+                            const fuelEconomy = parseFloat(fuelEconomyInput.value);
+                            const fuelConsumed = distance * (fuelEconomy / 100);
+                            const tripCost = fuelConsumed * costPerLitre;
+                            confirmationMessage.innerHTML += `<br>Your trip cost was approximately €${tripCost.toFixed(2)}.`;
+                        }
+                        console.log('Request sent successfully.');
                     })
                     .catch(error => {
                         console.error(error);
