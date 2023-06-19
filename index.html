@@ -1,48 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #f0f0f0;
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 0;
+      background-color: #f1f1f1;
+      font-family: 'Arial', sans-serif;
     }
 
     .container {
       max-width: 500px;
-      margin: 40px auto;
+      margin: 0 auto;
       padding: 20px;
-      background-color: #ffffff;
+      background-color: #fff;
+      border-radius: 5px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-      text-align: center;
     }
 
     .form-group {
       margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    input[type="number"],
-    select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 16px;
-      box-sizing: border-box;
     }
 
     .checkbox-group {
@@ -51,27 +27,7 @@
     }
 
     .checkbox-group label {
-      margin-bottom: 0;
-      margin-right: 10px;
-    }
-
-    button[type="submit"] {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      margin-top: 20px;
-      background-color: #4caf50;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    #message {
-      margin-top: 20px;
-      text-align: center;
-      font-weight: bold;
+      margin-left: 10px;
     }
 
     .success {
@@ -86,12 +42,12 @@
 
 <body>
   <div class="container">
-    <h2>Fuel Payment Form</h2>
+    <h1>Fuel Form</h1>
     <form id="fuelForm">
       <div class="form-group">
         <label for="name">Name:</label>
         <select id="name" required>
-          <option value="">Select Name</option>
+          <option value="" disabled selected>Select Name</option>
           <option value="Owen">Owen</option>
           <option value="Anthea">Anthea</option>
           <option value="Athol">Athol</option>
@@ -100,29 +56,32 @@
       </div>
       <div class="form-group">
         <label for="kms">KMs:</label>
-        <input type="number" id="kms" required>
+        <input type="number" id="kms" step="0.01" min="0" required>
       </div>
       <div class="form-group">
         <label for="fuelEconomy">Fuel Economy:</label>
-        <input type="number" id="fuelEconomy" required>
+        <input type="number" id="fuelEconomy" step="0.01" min="0" required>
+        <span>(l/100km)</span>
       </div>
       <div class="form-group">
         <label for="totalKms">Total KMs:</label>
-        <input type="number" id="totalKms" required>
+        <input type="number" id="totalKms" step="0.01" min="0" required>
       </div>
       <div class="form-group">
+        <label>Total Paid:</label>
+        <input type="number" id="totalPaid" step="0.01" min="0" required>
+      </div>
+      <div class="form-group">
+        <label for="cost">Cost:</label>
+        <input type="number" id="cost" step="0.01" min="0">
+        <span>(€/litre)</span>
+      </div>
+      <div class="form-group">
+        <label>Are you sure you want to submit the form?</label>
         <div class="checkbox-group">
           <input type="checkbox" id="paid">
           <label for="paid">Paid</label>
         </div>
-      </div>
-      <div class="form-group">
-        <label for="totalPaid">Total Paid:</label>
-        <input type="number" id="totalPaid" disabled>
-      </div>
-      <div class="form-group">
-        <label for="cost">Cost:</label>
-        <input type="number" id="cost" disabled>
       </div>
       <button type="submit">Submit</button>
     </form>
@@ -135,63 +94,59 @@
     const kmsElement = document.getElementById('kms');
     const fuelEconomyElement = document.getElementById('fuelEconomy');
     const totalKmsElement = document.getElementById('totalKms');
-    const paidElement = document.getElementById('paid');
     const totalPaidElement = document.getElementById('totalPaid');
     const costElement = document.getElementById('cost');
+    const paidElement = document.getElementById('paid');
     const messageElement = document.getElementById('message');
 
-    form.addEventListener('submit', function (event) {
-      event.preventDefault();
-      const paid = paidElement.checked;
-      const requestData = {
-        name: nameElement.value,
-        kms: paid ? null : Number(kmsElement.value),
-        fuelEconomy: paid ? null : Number(fuelEconomyElement.value),
-        totalKms: paid ? null : Number(totalKmsElement.value),
-        paid: paid,
-        totalPaid: paid ? Number(totalPaidElement.value) : null,
-        cost: paid ? Number(costElement.value) : null
-      };
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
 
-      const url = paid ?
-        'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fulePaid' :
-        'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
+      if (paidElement.checked && (!totalPaidElement.value || !costElement.value)) {
+        showMessage('Please enter Total Paid and Cost.', false);
+      } else {
+        const data = {
+          name: nameElement.value,
+          kms: parseFloat(kmsElement.value),
+          fuelEconomy: parseFloat(fuelEconomyElement.value),
+          totalKms: parseFloat(totalKmsElement.value),
+          totalPaid: parseFloat(totalPaidElement.value),
+          cost: parseFloat(costElement.value),
+          paid: paidElement.checked
+        };
 
-      const xhr = new XMLHttpRequest();
-      xhr.open(paid ? 'POST' : 'GET', url, true);
-      xhr.setRequestHeader('Content-Type', 'application/json');
+        const requestData = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        };
 
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          messageElement.textContent = 'Data submitted successfully.';
-          messageElement.classList.remove('error');
-          messageElement.classList.add('success');
-        } else {
-          messageElement.textContent = 'An error occurred. Please try again later.';
-          messageElement.classList.remove('success');
-          messageElement.classList.add('error');
-        }
-      };
+        const url = data.paid ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid' : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
-      xhr.onerror = function () {
-        messageElement.textContent = 'An error occurred. Please try again later.';
-        messageElement.classList.remove('success');
-        messageElement.classList.add('error');
-      };
-
-      xhr.send(JSON.stringify(requestData));
+        fetch(url, requestData)
+          .then(response => response.json())
+          .then(responseData => {
+            showMessage(`Form submitted successfully. Response: ${JSON.stringify(responseData)}`, true);
+          })
+          .catch(error => {
+            showMessage(`An error occurred. ${error}`, false);
+          });
+      }
     });
 
+    function showMessage(message, isSuccess) {
+      messageElement.textContent = message;
+      messageElement.className = isSuccess ? 'success' : 'error';
+    }
+
     paidElement.addEventListener('change', function () {
-      const isChecked = paidElement.checked;
+      const isChecked = this.checked;
       totalPaidElement.disabled = !isChecked;
       costElement.disabled = !isChecked;
-      kmsElement.disabled = isChecked;
-      fuelEconomyElement.disabled = isChecked;
-      totalKmsElement.disabled = isChecked;
     });
   </script>
 </body>
 
 </html>
-
