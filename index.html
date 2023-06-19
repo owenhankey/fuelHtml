@@ -171,8 +171,6 @@
         const kmsInput = document.getElementById('kms');
         const fuelEconomyInput = document.getElementById('fuelEconomy');
         const confirmationMessage = document.getElementById('confirmationMessage');
-        const returnCodeElement = document.getElementById('returnCode');
-        const responseDataElement = document.getElementById('responseData');
 
         paidCheckbox.addEventListener('change', function () {
             if (this.checked) {
@@ -196,26 +194,24 @@
                 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid' :
                 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
-            const confirmationText = `Are you sure you want to submit the following data?\n\n${params}`;
+            const confirmationText = `Are you sure you want to submit the following data?<br><br>${params}`;
             confirmationMessage.innerHTML = confirmationText;
             confirmationMessage.classList.remove('hidden');
 
             if (confirm('Are you sure?')) {
-                fetch(url + '?' + params)
+                fetch(url + '?' + params, { mode: 'no-cors' })
                     .then(response => {
-                        const returnCode = response.status;
-                        returnCodeElement.innerText = `Return Code: ${returnCode}`;
-                        return response.text();
+                        if (response.ok) {
+                            return response.text();
+                        } else {
+                            throw new Error('Request failed');
+                        }
                     })
                     .then(data => {
-                        // Handle the response data as needed
-                        console.log(data);
-                        responseDataElement.innerHTML = `Response Data:\n\n${data}`;
-                        responseDataElement.classList.remove('hidden');
+                        console.log(data); // Display the response text in the console
                         confirmationMessage.innerHTML = 'Data submitted successfully!';
                     })
                     .catch(error => {
-                        // Handle any errors that occurred during the request
                         console.error(error);
                         confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
                     });
