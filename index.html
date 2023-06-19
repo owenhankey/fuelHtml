@@ -1,99 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expense Form</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+  <title>Fuel Expenses</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+    /* Additional CSS for custom styling */
     body {
-      font-family: "Orbitron", sans-serif;
+      font-family: 'Orbitron', sans-serif;
       background-color: #f4f4f4;
-      color: #333;
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
       padding: 20px;
-      background-color: #fff;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
       text-align: center;
     }
 
-    form {
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      font-size: 24px;
       margin-bottom: 20px;
     }
 
     .form-group {
       margin-bottom: 15px;
+      text-align: left;
     }
 
-    label {
+    .form-group label {
       display: block;
       font-weight: bold;
+      margin-bottom: 5px;
     }
 
-    input[type="number"],
-    input[type="text"],
-    input[type="checkbox"] {
+    .form-group input,
+    .form-group select {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
+      padding: 8px;
+      font-size: 16px;
       border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
 
-    input[type="checkbox"] {
+    .form-group input[type="checkbox"] {
       display: inline-block;
       width: auto;
-      margin-right: 5px;
     }
 
     button[type="submit"] {
-      background-color: #4caf50;
+      background-color: #4CAF50;
       color: #fff;
-      border: none;
       padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .message {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .message.success {
-      color: #4caf50;
-    }
-
-    .message.error {
-      color: #f44336;
-    }
-
-    #viewDataButton {
-      display: block;
-      margin: 0 auto;
-      padding: 10px 20px;
-      background-color: #333;
-      color: #fff;
+      font-size: 16px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>Expense Form</h1>
-
+    <h1 class="header">Fuel Expenses</h1>
     <form id="expenseForm">
       <div class="form-group">
         <label for="name">Name:</label>
@@ -107,17 +83,17 @@
 
       <div class="form-group">
         <label for="kms">Kilometers:</label>
-        <input type="number" id="kms" name="kms" required>
+        <input type="number" id="kms" name="kms">
       </div>
 
       <div class="form-group">
         <label for="fuelEconomy">Fuel Economy (l/100km):</label>
-        <input type="number" id="fuelEconomy" name="fuelEconomy" required>
+        <input type="number" id="fuelEconomy" name="fuelEconomy" step="0.01">
       </div>
 
       <div class="form-group">
         <label for="totalKms">Total Kilometers:</label>
-        <input type="number" id="totalKms" name="totalKms" required>
+        <input type="number" id="totalKms" name="totalKms">
       </div>
 
       <div class="form-group">
@@ -127,119 +103,75 @@
 
       <div class="form-group" id="costGroup">
         <label for="cost">Cost (€/litre):</label>
-        <input type="number" id="cost" name="cost">
+        <input type="number" id="cost" name="cost" step="0.01">
       </div>
 
       <div class="form-group" id="totalPaidGroup">
         <label for="totalPaid">Total Paid:</label>
-        <input type="number" id="totalPaid" name="totalPaid">
+        <input type="number" id="totalPaid" name="totalPaid" step="0.01">
       </div>
 
       <button type="submit">Submit</button>
     </form>
-
-    <div class="message" id="messageDiv"></div>
-
-    <button id="viewDataButton">View Data</button>
   </div>
 
   <script>
     const expenseForm = document.getElementById("expenseForm");
     const costGroup = document.getElementById("costGroup");
     const totalPaidGroup = document.getElementById("totalPaidGroup");
-    const messageDiv = document.getElementById("messageDiv");
+    const kmsInput = document.getElementById("kms");
+    const fuelEconomyInput = document.getElementById("fuelEconomy");
 
     expenseForm.addEventListener("submit", function (event) {
       event.preventDefault();
-      const formData = new FormData(expenseForm);
-      const data = {};
-      for (const [key, value] of formData.entries()) {
-        data[key] = value;
-      }
-
+      const name = document.getElementById("name").value;
+      const kms = parseFloat(document.getElementById("kms").value);
+      const fuelEconomy = parseFloat(document.getElementById("fuelEconomy").value);
+      const totalKms = parseFloat(document.getElementById("totalKms").value);
       const paid = document.getElementById("paid").checked;
-      if (paid) {
-        if (!data.totalPaid || !data.cost) {
-          showMessage("Total Paid and Cost are required when Paid is checked.", "error");
-          return;
-        }
-        sendPostRequest(data);
-      } else {
-        sendGetRequest(data);
-      }
-    });
+      const cost = paid ? parseFloat(document.getElementById("cost").value) : null;
+      const totalPaid = paid ? parseFloat(document.getElementById("totalPaid").value) : null;
 
-    function sendPostRequest(data) {
-      // Replace with your actual POST endpoint
-      const url = "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid";
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      const formData = {
+        name: name,
+        kms: kms,
+        fuelEconomy: fuelEconomy,
+        totalKms: totalKms,
+        paid: paid,
+        cost: cost,
+        totalPaid: totalPaid
       };
 
-      fetch(url, requestOptions)
-        .then((response) => response.json())
-        .then((result) => {
-          showMessage("Data submitted successfully.", "success");
-          console.log(result);
-        })
-        .catch((error) => {
-          showMessage("Error occurred while submitting the data.", "error");
-          console.error(error);
-        });
-    }
+      console.log(formData); // Display form data in the console
 
-    function sendGetRequest(data) {
-      // Replace with your actual GET endpoint
-      const url = "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy";
-
-      // Append the form data as URL parameters
-      const params = new URLSearchParams(data);
-      const getRequestUrl = `${url}?${params}`;
-
-      fetch(getRequestUrl)
-        .then((response) => response.json())
-        .then((result) => {
-          showMessage("Data submitted successfully.", "success");
-          console.log(result);
-        })
-        .catch((error) => {
-          showMessage("Error occurred while submitting the data.", "error");
-          console.error(error);
-        });
-    }
-
-    function showMessage(message, messageType) {
-      messageDiv.innerHTML = message;
-      messageDiv.classList.add(messageType);
-      setTimeout(() => {
-        messageDiv.innerHTML = "";
-        messageDiv.classList.remove(messageType);
-      }, 3000);
-    }
-
-    const paidCheckbox = document.getElementById("paid");
-    const kmsInput = document.getElementById("kms");
-    const fuelEconomyInput = document.getElementById("fuelEconomy");
-    const totalKmsInput = document.getElementById("totalKms");
-
-    paidCheckbox.addEventListener("change", function () {
-      const paid = this.checked;
-      costGroup.style.display = paid ? "block" : "none";
-      totalPaidGroup.style.display = paid ? "block" : "none";
-      kmsInput.disabled = !paid;
-      fuelEconomyInput.disabled = !paid;
-      totalKmsInput.disabled = !paid;
+      if (confirm("Are you sure you want to submit the data?\n\n" + JSON.stringify(formData))) {
+        expenseForm.reset();
+        costGroup.style.display = "none";
+        totalPaidGroup.style.display = "none";
+        kmsInput.disabled = false;
+        fuelEconomyInput.disabled = false;
+      }
     });
 
-    const viewDataButton = document.getElementById("viewDataButton");
-    viewDataButton.addEventListener("click", function () {
-      // Replace with your actual page URL to retrieve data
-      const dataPageUrl = "https://example.com/view-data";
-      window.location.href = dataPageUrl;
+    const paidCheckbox = document.getElementById("paid");
+
+    paidCheckbox.addEventListener("change", function () {
+      const costGroup = document.getElementById("costGroup");
+      const totalPaidGroup = document.getElementById("totalPaidGroup");
+      const kmsInput = document.getElementById("kms");
+      const fuelEconomyInput = document.getElementById("fuelEconomy");
+
+      if (paidCheckbox.checked) {
+        costGroup.style.display = "block";
+        totalPaidGroup.style.display = "block";
+        kmsInput.disabled = true;
+        fuelEconomyInput.disabled = true;
+      } else {
+        costGroup.style.display = "none";
+        totalPaidGroup.style.display = "none";
+        kmsInput.disabled = false;
+        fuelEconomyInput.disabled = false;
+      }
     });
   </script>
 </body>
