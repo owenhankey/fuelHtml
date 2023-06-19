@@ -6,7 +6,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico&display=swap">
   <style>
-    /* CSS styles here */
+    body {
+      background-color: #f0f0f0;
+      font-family: 'Pacifico', cursive;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+    }
+
+    .checkbox-group label {
+      margin-bottom: 0;
+      margin-right: 10px;
+    }
+
+    button[type="submit"] {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 20px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
   </style>
 </head>
 
@@ -37,8 +111,10 @@
         <input type="number" id="totalKms" required>
       </div>
       <div class="form-group">
-        <label for="paid">Paid:</label>
-        <input type="checkbox" id="paid">
+        <div class="checkbox-group">
+          <input type="checkbox" id="paid">
+          <label for="paid">Paid</label>
+        </div>
       </div>
       <div class="form-group">
         <label for="totalPaid">Total Paid:</label>
@@ -54,43 +130,32 @@
   </div>
 
   <script>
-    // JavaScript code here
-
     const form = document.getElementById('fuelForm');
-    const paidCheckbox = document.getElementById('paid');
-    const totalPaidInput = document.getElementById('totalPaid');
-    const costInput = document.getElementById('cost');
+    const nameElement = document.getElementById('name');
+    const kmsElement = document.getElementById('kms');
+    const fuelEconomyElement = document.getElementById('fuelEconomy');
+    const totalKmsElement = document.getElementById('totalKms');
+    const paidElement = document.getElementById('paid');
+    const totalPaidElement = document.getElementById('totalPaid');
+    const costElement = document.getElementById('cost');
     const messageElement = document.getElementById('message');
 
-    paidCheckbox.addEventListener('change', function () {
-      totalPaidInput.disabled = !paidCheckbox.checked;
-      costInput.disabled = !paidCheckbox.checked;
-    });
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const name = document.getElementById('name').value;
-      const kms = document.getElementById('kms').value;
-      const fuelEconomy = document.getElementById('fuelEconomy').value;
-      const totalKms = document.getElementById('totalKms').value;
-      const paid = document.getElementById('paid').checked;
-      const totalPaid = document.getElementById('totalPaid').value;
-      const cost = document.getElementById('cost').value;
-
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const paid = paidElement.checked;
       const requestData = {
-        name,
-        kms: paid ? '' : kms,
-        fuelEconomy: paid ? '' : fuelEconomy,
-        totalKms: paid ? '' : totalKms,
-        paid,
-        totalPaid: paid ? totalPaid : '',
-        cost: paid ? cost : ''
+        name: nameElement.value,
+        kms: paid ? null : Number(kmsElement.value),
+        fuelEconomy: paid ? null : Number(fuelEconomyElement.value),
+        totalKms: paid ? null : Number(totalKmsElement.value),
+        paid: paid,
+        totalPaid: paid ? Number(totalPaidElement.value) : null,
+        cost: paid ? Number(costElement.value) : null
       };
 
-      const url = paid
-        ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fulePaid'
-        : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
+      const url = paid ?
+        'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fulePaid' :
+        'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
       const xhr = new XMLHttpRequest();
       xhr.open(paid ? 'POST' : 'GET', url, true);
