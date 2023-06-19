@@ -54,11 +54,25 @@
     .submit-btn:hover {
       background-color: #45a049;
     }
+
+    .secondary-btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .secondary-btn:hover {
+      background-color: #555;
+    }
   </style>
 </head>
 
 <body>
-  <h1>Fuel Expenses</h1>
+  <h1 style="font-family: 'Orbitron', sans-serif;">Fuel Expenses</h1>
 
   <form id="expenseForm">
     <label for="name">Name:</label>
@@ -79,8 +93,8 @@
     <input type="number" id="totalKms" name="totalKms" step="any" required>
 
     <div>
-      <input type="checkbox" id="paid" name="paid">
       <label for="paid">Paid</label>
+      <input type="checkbox" id="paid" name="paid">
     </div>
 
     <div id="costGroup" style="display: none;">
@@ -94,15 +108,11 @@
     </div>
 
     <button class="submit-btn" type="submit">Submit</button>
+    <button class="secondary-btn" onclick="window.location.href='another-page.html'">Go to Another Page</button>
   </form>
 
   <script>
     const expenseForm = document.getElementById("expenseForm");
-    const costGroup = document.getElementById("costGroup");
-    const totalPaidGroup = document.getElementById("totalPaidGroup");
-    const kmsInput = document.getElementById("kms");
-    const fuelEconomyInput = document.getElementById("fuelEconomy");
-    const totalKmsInput = document.getElementById("totalKms");
 
     expenseForm.addEventListener("submit", function (event) {
       event.preventDefault();
@@ -140,30 +150,23 @@
         expenseForm.reset();
         costGroup.style.display = "none";
         totalPaidGroup.style.display = "none";
-        kmsInput.disabled = false;
-        fuelEconomyInput.disabled = false;
         totalKmsInput.disabled = false;
       }
     });
 
     const paidCheckbox = document.getElementById("paid");
+    const costGroup = document.getElementById("costGroup");
+    const totalPaidGroup = document.getElementById("totalPaidGroup");
+    const totalKmsInput = document.getElementById("totalKms");
 
     paidCheckbox.addEventListener("change", function () {
-      const costGroup = document.getElementById("costGroup");
-      const totalPaidGroup = document.getElementById("totalPaidGroup");
-      const totalKmsInput = document.getElementById("totalKms");
-
       if (paidCheckbox.checked) {
         costGroup.style.display = "block";
         totalPaidGroup.style.display = "block";
-        kmsInput.disabled = true;
-        fuelEconomyInput.disabled = true;
         totalKmsInput.disabled = true;
       } else {
         costGroup.style.display = "none";
         totalPaidGroup.style.display = "none";
-        kmsInput.disabled = false;
-        fuelEconomyInput.disabled = false;
         totalKmsInput.disabled = false;
       }
     });
@@ -171,4 +174,3 @@
 </body>
 
 </html>
-
