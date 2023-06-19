@@ -2,175 +2,178 @@
 <html>
 
 <head>
-  <title>Fuel Expenses</title>
-  <style>
-    body {
-      font-family: "Orbitron", sans-serif;
-      background-color: #f1f1f1;
-      padding: 20px;
-    }
+    <title>Fuel Expenses</title>
+    <style>
+        body {
+            font-family: "Orbitron", sans-serif;
+            background-color: #f1f1f1;
+            padding: 20px;
+        }
 
-    h1 {
-      text-align: center;
-      color: #333;
-    }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
 
-    form {
-      background-color: #fff;
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 20px;
-      border-radius: 5px;
-    }
+        form {
+            background-color: #fff;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 5px;
+        }
 
-    label {
-      display: block;
-      margin-bottom: 10px;
-      color: #333;
-    }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
 
-    input[type="text"],
-    input[type="number"] {
-      width: 100%;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
 
-    input[type="checkbox"] {
-      margin-top: 10px;
-    }
+        input[type="checkbox"] {
+            margin-top: 10px;
+        }
 
-    .submit-btn {
-      width: 100%;
-      padding: 10px;
-      background-color: #4CAF50;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-    .submit-btn:hover {
-      background-color: #45a049;
-    }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
 
-    .secondary-btn {
-      width: 100%;
-      padding: 10px;
-      background-color: #333;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+        .view-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
 
-    .secondary-btn:hover {
-      background-color: #555;
-    }
-  </style>
+        .view-btn:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 
 <body>
-  <h1 style="font-family: 'Orbitron', sans-serif;">Fuel Expenses</h1>
+    <h1>Fuel Expenses</h1>
 
-  <form id="expenseForm">
-    <label for="name">Name:</label>
-    <select id="name" name="name">
-      <option value="Owen">Owen</option>
-      <option value="Anthea">Anthea</option>
-      <option value="Athol">Athol</option>
-      <option value="Norman">Norman</option>
-    </select>
+    <form id="expenseForm">
+        <label for="name">Name:</label>
+        <select id="name" name="name">
+            <option value="Owen">Owen</option>
+            <option value="Anthea">Anthea</option>
+            <option value="Athol">Athol</option>
+            <option value="Norman">Norman</option>
+        </select>
 
-    <label for="kms">Kilometers:</label>
-    <input type="number" id="kms" name="kms" step="any" required>
+        <label for="kms">Kilometers:</label>
+        <input type="number" id="kms" name="kms" step="any" required>
 
-    <label for="fuelEconomy">Fuel Economy (l/100km):</label>
-    <input type="number" id="fuelEconomy" name="fuelEconomy" step="any" required>
+        <label for="fuelEconomy">Fuel Economy (l/100km):</label>
+        <input type="number" id="fuelEconomy" name="fuelEconomy" step="any" required>
 
-    <label for="totalKms">Total Kilometers:</label>
-    <input type="number" id="totalKms" name="totalKms" step="any" required>
+        <label for="totalKms">Total Kilometers:</label>
+        <input type="number" id="totalKms" name="totalKms" step="any" required>
 
-    <div>
-      <label for="paid">Paid</label>
-      <input type="checkbox" id="paid" name="paid">
-    </div>
+        <div>
+            <label for="paid">Paid</label>
+            <input type="checkbox" id="paid" name="paid">
+        </div>
 
-    <div id="costGroup" style="display: none;">
-      <label for="cost">Cost (€/litre):</label>
-      <input type="number" id="cost" name="cost" step="any">
-    </div>
+        <div id="costGroup" style="display: none;">
+            <label for="cost">Cost (€/litre):</label>
+            <input type="number" id="cost" name="cost" step="any">
+        </div>
 
-    <div id="totalPaidGroup" style="display: none;">
-      <label for="totalPaid">Total Paid:</label>
-      <input type="number" id="totalPaid" name="totalPaid" step="any">
-    </div>
+        <div id="totalPaidGroup" style="display: none;">
+            <label for="totalPaid">Total Paid:</label>
+            <input type="number" id="totalPaid" name="totalPaid" step="any">
+        </div>
 
-    <button class="submit-btn" type="submit">Submit</button>
-    <button class="secondary-btn" onclick="window.location.href='another-page.html'">Go to Another Page</button>
-  </form>
+        <button class="submit-btn" type="submit">Submit</button>
+        <button class="view-btn" onclick="window.location.href='another-page.html'">View Data</button>
+    </form>
 
-  <script>
-    const expenseForm = document.getElementById("expenseForm");
+    <script>
+        const expenseForm = document.getElementById("expenseForm");
 
-    expenseForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      const name = document.getElementById("name").value;
-      const kms = parseFloat(document.getElementById("kms").value);
-      const fuelEconomy = parseFloat(document.getElementById("fuelEconomy").value);
-      const totalKms = parseFloat(document.getElementById("totalKms").value);
-      const paid = document.getElementById("paid").checked;
-      const cost = paid ? parseFloat(document.getElementById("cost").value) : null;
-      const totalPaid = paid ? parseFloat(document.getElementById("totalPaid").value) : null;
+        expenseForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const name = document.getElementById("name").value;
+            const kms = parseFloat(document.getElementById("kms").value);
+            const fuelEconomy = parseFloat(document.getElementById("fuelEconomy").value);
+            const totalKms = parseFloat(document.getElementById("totalKms").value);
+            const paid = document.getElementById("paid").checked;
+            const cost = paid ? parseFloat(document.getElementById("cost").value) : null;
+            const totalPaid = paid ? parseFloat(document.getElementById("totalPaid").value) : null;
 
-      const formData = {
-        name: name,
-        kms: kms,
-        fuelEconomy: fuelEconomy,
-        totalKms: totalKms,
-        paid: paid,
-        cost: cost,
-        totalPaid: totalPaid
-      };
+            const formData = {
+                name: name,
+                kms: kms,
+                fuelEconomy: fuelEconomy,
+                totalKms: totalKms,
+                paid: paid,
+                cost: cost,
+                totalPaid: totalPaid
+            };
 
-      console.log(formData); // Display form data in the console
+            console.log(formData); // Display form data in the console
 
-      if (confirm("Are you sure you want to submit the following data?\n\n" + JSON.stringify(formData, null, 2))) {
-        if (paid) {
-          const params = new URLSearchParams(formData).toString();
-          const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid?${params}`;
-          window.location.href = url;
-        } else {
-          const params = new URLSearchParams(formData).toString();
-          const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?${params}`;
-          window.location.href = url;
-        }
+            if (confirm("Are you sure you want to submit the following data?\n\n" + JSON.stringify(formData, null, 2))) {
+                if (paid) {
+                    const params = new URLSearchParams(formData).toString();
+                    const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid?${params}`;
+                    window.location.href = url;
+                } else {
+                    const params = new URLSearchParams(formData).toString();
+                    const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?${params}`;
+                    window.location.href = url;
+                }
 
-        expenseForm.reset();
-        costGroup.style.display = "none";
-        totalPaidGroup.style.display = "none";
-        totalKmsInput.disabled = false;
-      }
-    });
+                expenseForm.reset();
+                costGroup.style.display = "none";
+                totalPaidGroup.style.display = "none";
+                totalKmsInput.disabled = false;
+            }
+        });
 
-    const paidCheckbox = document.getElementById("paid");
-    const costGroup = document.getElementById("costGroup");
-    const totalPaidGroup = document.getElementById("totalPaidGroup");
-    const totalKmsInput = document.getElementById("totalKms");
+        const paidCheckbox = document.getElementById("paid");
+        const costGroup = document.getElementById("costGroup");
+        const totalPaidGroup = document.getElementById("totalPaidGroup");
+        const totalKmsInput = document.getElementById("totalKms");
 
-    paidCheckbox.addEventListener("change", function () {
-      if (paidCheckbox.checked) {
-        costGroup.style.display = "block";
-        totalPaidGroup.style.display = "block";
-        totalKmsInput.disabled = true;
-      } else {
-        costGroup.style.display = "none";
-        totalPaidGroup.style.display = "none";
-        totalKmsInput.disabled = false;
-      }
-    });
-  </script>
+        paidCheckbox.addEventListener("change", function () {
+            if (paidCheckbox.checked) {
+                costGroup.style.display = "block";
+                totalPaidGroup.style.display = "block";
+                totalKmsInput.disabled = true;
+            } else {
+                costGroup.style.display = "none";
+                totalPaidGroup.style.display = "none";
+                totalKmsInput.disabled = false;
+            }
+        });
+    </script>
 </body>
 
 </html>
