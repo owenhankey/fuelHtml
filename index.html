@@ -68,20 +68,15 @@
 
             const requestUrl = paid ? "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid" : "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy";
 
-            fetch(requestUrl, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: name,
-                    kms: kms,
-                    fuelEconomy: fuelEconomy,
-                    paid: paid,
-                    cost: cost,
-                    totalPaid: totalPaid
-                })
-            })
+            const params = new URLSearchParams();
+            params.append("name", name);
+            params.append("kms", kms);
+            params.append("fuelEconomy", fuelEconomy);
+            params.append("paid", paid);
+            params.append("cost", cost);
+            params.append("totalPaid", totalPaid);
+
+            fetch(`${requestUrl}?${params}`)
                 .then(response => {
                     if (response.ok) {
                         console.log("Data sent successfully");
