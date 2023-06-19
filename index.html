@@ -11,17 +11,6 @@
         .submit-btn {
             margin-top: 10px;
         }
-
-        .data-table {
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-
-        .data-table th,
-        .data-table td {
-            padding: 5px;
-            border: 1px solid black;
-        }
     </style>
 </head>
 
@@ -62,26 +51,8 @@
         <button type="submit" class="submit-btn">Submit</button>
     </form>
 
-    <button id="viewDataBtn" class="view-btn">View Data</button>
-
-    <table id="dataTable" class="data-table">
-        <thead>
-            <tr>
-                <th class="header-cell">Name</th>
-                <th class="header-cell">Kilometers</th>
-                <th class="header-cell">Fuel Economy (l/100km)</th>
-                <th class="header-cell">Paid</th>
-                <th class="header-cell">Cost</th>
-                <th class="header-cell">Total Paid</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
     <script>
         const expenseForm = document.getElementById("expenseForm");
-        const viewDataBtn = document.getElementById("viewDataBtn");
-        const dataTable = document.getElementById("dataTable");
         const paidCheckbox = document.getElementById("paid");
 
         expenseForm.addEventListener("submit", function (event) {
@@ -97,50 +68,32 @@
 
             const requestUrl = paid ? "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid" : "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy";
 
-            fetch(requestUrl)
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Data received successfully:", data);
-                    displayData(data);
+            fetch(requestUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    kms: kms,
+                    fuelEconomy: fuelEconomy,
+                    paid: paid,
+                    cost: cost,
+                    totalPaid: totalPaid
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Data sent successfully");
+                        expenseForm.reset();
+                    } else {
+                        console.log("Failed to send data");
+                    }
                 })
                 .catch(error => {
-                    console.log("Error receiving data:", error);
-                });
-
-            expenseForm.reset();
-        });
-
-        viewDataBtn.addEventListener("click", function () {
-            const requestUrl = paidCheckbox.checked ? "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid" : "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy";
-
-            fetch(requestUrl)
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Data received successfully:", data);
-                    displayData(data);
-                })
-                .catch(error => {
-                    console.log("Error receiving data:", error);
+                    console.log("Error sending data:", error);
                 });
         });
-
-        function displayData(data) {
-            const tbody = dataTable.querySelector("tbody");
-            tbody.innerHTML = "";
-
-            data.forEach(row => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${row.name}</td>
-                    <td>${row.kms}</td>
-                    <td>${row.fuelEconomy}</td>
-                    <td>${row.paid}</td>
-                    <td>${row.cost}</td>
-                    <td>${row.totalPaid}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
     </script>
 </body>
 
