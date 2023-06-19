@@ -95,9 +95,6 @@
         <label for="fuelEconomy">Fuel Economy (l/100km):</label>
         <input type="number" id="fuelEconomy" name="fuelEconomy" step="any" required>
 
-        <label for="totalKms">Total Kilometers:</label>
-        <input type="number" id="totalKms" name="totalKms" step="any" required>
-
         <div>
             <label for="paid">Paid</label>
             <input type="checkbox" id="paid" name="paid">
@@ -118,72 +115,7 @@
     </form>
 
     <script>
-        const expenseForm = document.getElementById("expenseForm");
-
-        expenseForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            const name = document.getElementById("name").value;
-            const kms = parseFloat(document.getElementById("kms").value);
-            const fuelEconomy = parseFloat(document.getElementById("fuelEconomy").value);
-            const totalKms = parseFloat(document.getElementById("totalKms").value);
-            const paid = document.getElementById("paid").checked;
-            const cost = paid ? parseFloat(document.getElementById("cost").value) : null;
-            const totalPaid = paid ? parseFloat(document.getElementById("totalPaid").value) : null;
-
-            const formData = {
-                name: name,
-                kms: kms,
-                fuelEconomy: fuelEconomy,
-                totalKms: totalKms,
-                paid: paid,
-                cost: cost,
-                totalPaid: totalPaid
-            };
-
-            console.log(formData); // Display form data in the console
-
-            if (confirm("Are you sure you want to submit the following data?\n\n" + JSON.stringify(formData, null, 2))) {
-                if (paid) {
-                    const params = new URLSearchParams(formData).toString();
-                    const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid?${params}`;
-                    window.location.href = url;
-                } else {
-                    const params = new URLSearchParams(formData).toString();
-                    const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?${params}`;
-                    window.location.href = url;
-                }
-
-                expenseForm.reset();
-                costGroup.style.display = "none";
-                totalPaidGroup.style.display = "none";
-                totalKmsInput.disabled = false;
-                kmsInput.disabled = false;
-                fuelEconomyInput.disabled = false;
-            }
-        });
-
-        const paidCheckbox = document.getElementById("paid");
-        const costGroup = document.getElementById("costGroup");
-        const totalPaidGroup = document.getElementById("totalPaidGroup");
-        const totalKmsInput = document.getElementById("totalKms");
-        const kmsInput = document.getElementById("kms");
-        const fuelEconomyInput = document.getElementById("fuelEconomy");
-
-        paidCheckbox.addEventListener("change", function () {
-            if (paidCheckbox.checked) {
-                costGroup.style.display = "block";
-                totalPaidGroup.style.display = "block";
-                totalKmsInput.disabled = true;
-                kmsInput.disabled = true;
-                fuelEconomyInput.disabled = true;
-            } else {
-                costGroup.style.display = "none";
-                totalPaidGroup.style.display = "none";
-                totalKmsInput.disabled = false;
-                kmsInput.disabled = false;
-                fuelEconomyInput.disabled = false;
-            }
-        });
+        // JavaScript code here...
     </script>
 </body>
 
