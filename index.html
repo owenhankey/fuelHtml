@@ -131,15 +131,43 @@
             <input type="checkbox" id="paid" name="paid">
         </div>
 
-        <button class="submit-btn" type="submit">Submit</button>
+        <div class="form-row hidden" id="costGroup">
+            <label for="cost">Cost (€/litre):</label>
+            <input type="number" id="cost" name="cost" step="any">
+        </div>
+
+        <div class="form-row hidden" id="totalPaidGroup">
+            <label for="totalPaid">Total Paid (€):</label>
+            <input type="number" id="totalPaid" name="totalPaid" step="any">
+        </div>
+
+        <input type="submit" class="submit-btn" value="Submit">
     </form>
 
     <div id="confirmationMessage" class="confirmation-message hidden"></div>
 
     <script>
         const expenseForm = document.getElementById('expenseForm');
-        const confirmationMessage = document.getElementById('confirmationMessage');
         const paidCheckbox = document.getElementById('paid');
+        const costGroup = document.getElementById('costGroup');
+        const totalPaidGroup = document.getElementById('totalPaidGroup');
+        const kmsInput = document.getElementById('kms');
+        const fuelEconomyInput = document.getElementById('fuelEconomy');
+        const confirmationMessage = document.getElementById('confirmationMessage');
+
+        paidCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                kmsInput.disabled = true;
+                fuelEconomyInput.disabled = true;
+                costGroup.classList.remove('hidden');
+                totalPaidGroup.classList.remove('hidden');
+            } else {
+                kmsInput.disabled = false;
+                fuelEconomyInput.disabled = false;
+                costGroup.classList.add('hidden');
+                totalPaidGroup.classList.add('hidden');
+            }
+        });
 
         expenseForm.addEventListener('submit', function (event) {
             event.preventDefault();
@@ -154,30 +182,16 @@
             confirmationMessage.classList.remove('hidden');
 
             if (confirm('Are you sure?')) {
-                fetch(url + '?' + params, {
-                    method: 'GET',
-                    mode: 'no-cors' // Added 'no-cors' mode
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            return response.text(); // Return the response body text
-                        } else {
-                            throw new Error('Request failed.'); // Throw an error if the response is not successful
-                        }
-                    })
-                    .then(data => {
-                        // Handle the response data as needed
-                        console.log(data);
-
-                        if (!paidCheckbox.checked && response.ok) {
-                            const tripCost = calculateTripCost(formData);
-                            confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost}.`;
+                fetch(url + '?' + params, { mode: 'no-cors' })
+                    .then(() => {
+                        if (paidCheckbox.checked) {
+                            const tripCost = parseFloat(kmsInput.value) * parseFloat(fuelEconomyInput.value) * 1.55;
+                            confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
                         } else {
                             confirmationMessage.innerHTML = 'Data submitted successfully!';
                         }
                     })
                     .catch(error => {
-                        // Handle any errors that occurred during the request
                         console.error(error);
                         confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
                     });
@@ -185,15 +199,6 @@
                 confirmationMessage.classList.add('hidden');
             }
         });
-
-        function calculateTripCost(formData) {
-            const kms = Number(formData.get('kms'));
-            const fuelEconomy = Number(formData.get('fuelEconomy'));
-            const costPerLitre = 1.55;
-
-            const tripCost = (kms / 100) * fuelEconomy * costPerLitre;
-            return tripCost.toFixed(2);
-        }
     </script>
 </body>
 
