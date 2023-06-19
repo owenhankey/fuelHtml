@@ -3,80 +3,7 @@
 
 <head>
   <style>
-    body {
-      background-color: #f1f1f1;
-      font-family: 'Arial', sans-serif;
-    }
-
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .form-group select,
-    .form-group input[type="number"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-
-    .form-group span {
-      font-size: 14px;
-      color: #888;
-    }
-
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-    }
-
-    .checkbox-group label {
-      margin-left: 10px;
-    }
-
-    .submit-btn {
-      background-color: #4CAF50;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .message {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .message.success {
-      color: green;
-    }
-
-    .message.error {
-      color: red;
-    }
+    /* Styles here */
   </style>
 </head>
 
@@ -84,44 +11,41 @@
   <div class="container">
     <h1>Fuel Form</h1>
     <form id="fuelForm">
-      <div class="form-group">
+      <div>
         <label for="name">Name:</label>
-        <select id="name" required>
-          <option value="" disabled selected>Select Name</option>
+        <select id="name" name="name">
           <option value="Owen">Owen</option>
           <option value="Anthea">Anthea</option>
           <option value="Athol">Athol</option>
           <option value="Norman">Norman</option>
         </select>
       </div>
-      <div class="form-group">
-        <label for="kms">KMs:</label>
-        <input type="number" id="kms" step="0.01" min="0" required>
+      <div>
+        <label for="kms">Kilometers Driven:</label>
+        <input type="number" id="kms" name="kms" required>
       </div>
-      <div class="form-group">
-        <label for="fuelEconomy">Fuel Economy:</label>
-        <input type="number" id="fuelEconomy" step="0.01" min="0" required>
-        <span>(l/100km)</span>
+      <div>
+        <label for="fuelEconomy">Fuel Economy (l/100km):</label>
+        <input type="number" step="0.01" id="fuelEconomy" name="fuelEconomy" required>
       </div>
-      <div class="form-group">
-        <label for="totalKms">Total KMs:</label>
-        <input type="number" id="totalKms" step="0.01" min="0" required>
+      <div>
+        <label for="totalKms">Total Kilometers:</label>
+        <input type="number" id="totalKms" name="totalKms" required>
       </div>
-      <div class="form-group">
-        <label>Total Paid:</label>
-        <input type="number" id="totalPaid" step="0.01" min="0" required>
+      <div>
+        <label for="totalPaid">Total Paid:</label>
+        <input type="number" step="0.01" id="totalPaid" name="totalPaid" disabled>
       </div>
-      <div class="form-group">
-        <label>Cost:</label>
-        <input type="number" id="cost" step="0.01" min="0" required>
-        <span>(€/litre)</span>
+      <div>
+        <label for="cost">Cost (€/litre):</label>
+        <input type="number" step="0.01" id="cost" name="cost" disabled>
       </div>
-      <div class="checkbox-group">
-        <input type="checkbox" id="paid">
+      <div>
+        <input type="checkbox" id="paid" name="paid">
         <label for="paid">Paid</label>
       </div>
-      <div class="form-group">
-        <button type="submit" class="submit-btn">Submit</button>
+      <div>
+        <button type="submit">Submit</button>
       </div>
     </form>
     <p id="message" class="message"></p>
@@ -154,24 +78,37 @@
           paid: paidElement.checked
         };
 
-        const requestData = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        };
+        if (data.paid) {
+          // Send POST request
+          const requestData = {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          };
 
-        const url = data.paid ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid' : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
+          fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid', requestData)
+            .then(response => response.json())
+            .then(responseData => {
+              showMessage(`Form submitted successfully. Response: ${JSON.stringify(responseData)}`, true);
+            })
+            .catch(error => {
+              showMessage(`An error occurred. ${error}`, false);
+            });
+        } else {
+          // Send GET request
+          const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?name=${encodeURIComponent(data.name)}&kms=${encodeURIComponent(data.kms)}&fuelEconomy=${encodeURIComponent(data.fuelEconomy)}&totalKms=${encodeURIComponent(data.totalKms)}&totalPaid=${encodeURIComponent(data.totalPaid)}&cost=${encodeURIComponent(data.cost)}`;
 
-        fetch(url, requestData)
-          .then(response => response.json())
-          .then(responseData => {
-            showMessage(`Form submitted successfully. Response: ${JSON.stringify(responseData)}`, true);
-          })
-          .catch(error => {
-            showMessage(`An error occurred. ${error}`, false);
-          });
+          fetch(url)
+            .then(response => response.json())
+            .then(responseData => {
+              showMessage(`Form submitted successfully. Response: ${JSON.stringify(responseData)}`, true);
+            })
+            .catch(error => {
+              showMessage(`An error occurred. ${error}`, false);
+            });
+        }
       }
     });
 
