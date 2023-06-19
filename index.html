@@ -4,124 +4,169 @@
 <head>
   <style>
     /* Styles here */
+    body {
+      font-family: "Arial", sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      font-family: "Impact", sans-serif;
+      color: #333333;
+      margin-top: 0;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    select,
+    input[type="number"] {
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    input[type="checkbox"] {
+      margin-bottom: 10px;
+    }
+
+    button[type="submit"] {
+      padding: 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .message {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .success {
+      background-color: #a3e8a3;
+      color: #006600;
+    }
+
+    .error {
+      background-color: #ffcccc;
+      color: #990000;
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>Fuel Form</h1>
-    <form id="fuelForm">
-      <div>
-        <label for="name">Name:</label>
-        <select id="name" name="name">
-          <option value="Owen">Owen</option>
-          <option value="Anthea">Anthea</option>
-          <option value="Athol">Athol</option>
-          <option value="Norman">Norman</option>
-        </select>
-      </div>
-      <div>
-        <label for="kms">Kilometers Driven:</label>
-        <input type="number" id="kms" name="kms" required>
-      </div>
-      <div>
-        <label for="fuelEconomy">Fuel Economy (l/100km):</label>
-        <input type="number" step="0.01" id="fuelEconomy" name="fuelEconomy" required>
-      </div>
-      <div>
-        <label for="totalKms">Total Kilometers:</label>
-        <input type="number" id="totalKms" name="totalKms" required>
-      </div>
-      <div>
-        <label for="totalPaid">Total Paid:</label>
-        <input type="number" step="0.01" id="totalPaid" name="totalPaid" disabled>
-      </div>
-      <div>
-        <label for="cost">Cost (€/litre):</label>
-        <input type="number" step="0.01" id="cost" name="cost" disabled>
-      </div>
-      <div>
-        <input type="checkbox" id="paid" name="paid">
-        <label for="paid">Paid</label>
-      </div>
-      <div>
-        <button type="submit">Submit</button>
-      </div>
+    <h1>Vehicle Expenses</h1>
+    <form id="expenseForm">
+      <label for="name">Name:</label>
+      <select id="name" name="name" required>
+        <option value="Owen">Owen</option>
+        <option value="Anthea">Anthea</option>
+        <option value="Athol">Athol</option>
+        <option value="Norman">Norman</option>
+      </select>
+
+      <label for="kms">Kilometers:</label>
+      <input type="number" id="kms" name="kms" required>
+
+      <label for="fuelEconomy">Fuel Economy (l/100km):</label>
+      <input type="number" id="fuelEconomy" name="fuelEconomy" required>
+
+      <label for="totalKms">Total Kilometers:</label>
+      <input type="number" id="totalKms" name="totalKms" required>
+
+      <input type="checkbox" id="paid" name="paid">
+      <label for="paid">Paid</label>
+
+      <label for="cost">Cost (€/litre):</label>
+      <input type="number" id="cost" name="cost">
+
+      <button type="submit">Submit</button>
     </form>
-    <p id="message" class="message"></p>
+
+    <div id="message" class="message"></div>
   </div>
 
   <script>
-    const form = document.getElementById('fuelForm');
-    const nameElement = document.getElementById('name');
-    const kmsElement = document.getElementById('kms');
-    const fuelEconomyElement = document.getElementById('fuelEconomy');
-    const totalKmsElement = document.getElementById('totalKms');
-    const totalPaidElement = document.getElementById('totalPaid');
-    const costElement = document.getElementById('cost');
-    const paidElement = document.getElementById('paid');
-    const messageElement = document.getElementById('message');
+    const form = document.getElementById("expenseForm");
+    const messageDiv = document.getElementById("message");
 
-    form.addEventListener('submit', function (e) {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
+      messageDiv.innerHTML = ""; // Clear previous message
 
-      if (paidElement.checked && (!totalPaidElement.value || !costElement.value)) {
-        showMessage('Please enter Total Paid and Cost.', false);
-      } else {
-        const data = {
-          name: nameElement.value,
-          kms: parseFloat(kmsElement.value),
-          fuelEconomy: parseFloat(fuelEconomyElement.value),
-          totalKms: parseFloat(totalKmsElement.value),
-          totalPaid: parseFloat(totalPaidElement.value),
-          cost: parseFloat(costElement.value),
-          paid: paidElement.checked
-        };
+      const formData = new FormData(form);
+      const name = formData.get("name");
+      const kms = formData.get("kms");
+      const fuelEconomy = formData.get("fuelEconomy");
+      const totalKms = formData.get("totalKms");
+      const paid = formData.get("paid");
+      const cost = formData.get("cost");
 
-        if (data.paid) {
-          // Send POST request
-          const requestData = {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-          };
+      const message = `Name: ${name}<br>
+        Kilometers: ${kms}<br>
+        Fuel Economy: ${fuelEconomy}<br>
+        Total Kilometers: ${totalKms}<br>
+        Paid: ${paid}<br>
+        Cost: ${cost}`;
 
-          fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid', requestData)
-            .then(response => response.json())
-            .then(responseData => {
-              showMessage(`Form submitted successfully. Response: ${JSON.stringify(responseData)}`, true);
+      if (confirm(`Are you sure?\n\n${message}`)) {
+        if (paid) {
+          // Perform POST request to fulePaid endpoint
+          // Replace the API endpoint with your actual endpoint URL
+          fetch("https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid", {
+            method: "POST",
+            body: formData,
+          })
+            .then(() => {
+              showMessage("Data submitted successfully!", "success");
+              form.reset();
             })
-            .catch(error => {
-              showMessage(`An error occurred. ${error}`, false);
+            .catch(() => {
+              showMessage("Error submitting data.", "error");
             });
         } else {
-          // Send GET request
-          const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?name=${encodeURIComponent(data.name)}&kms=${encodeURIComponent(data.kms)}&fuelEconomy=${encodeURIComponent(data.fuelEconomy)}&totalKms=${encodeURIComponent(data.totalKms)}&totalPaid=${encodeURIComponent(data.totalPaid)}&cost=${encodeURIComponent(data.cost)}`;
-
-          fetch(url)
-            .then(response => response.json())
-            .then(responseData => {
-              showMessage(`Form submitted successfully. Response: ${JSON.stringify(responseData)}`, true);
+          // Perform GET request to fuelEconomy endpoint
+          // Replace the API endpoint with your actual endpoint URL
+          fetch("https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?" + new URLSearchParams(formData))
+            .then(() => {
+              showMessage("Data submitted successfully!", "success");
+              form.reset();
             })
-            .catch(error => {
-              showMessage(`An error occurred. ${error}`, false);
+            .catch(() => {
+              showMessage("Error submitting data.", "error");
             });
         }
       }
     });
 
-    function showMessage(message, isSuccess) {
-      messageElement.textContent = message;
-      messageElement.className = isSuccess ? 'message success' : 'message error';
+    function showMessage(text, className) {
+      const message = document.createElement("div");
+      message.innerHTML = text;
+      message.classList.add("message", className);
+      messageDiv.appendChild(message);
     }
-
-    paidElement.addEventListener('change', function () {
-      const isChecked = this.checked;
-      totalPaidElement.disabled = !isChecked;
-      costElement.disabled = !isChecked;
-    });
   </script>
 </body>
 
