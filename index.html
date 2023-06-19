@@ -173,14 +173,17 @@
             event.preventDefault();
             const formData = new FormData(this);
             const params = new URLSearchParams(formData).toString();
-            const url = 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
+            const name = document.getElementById('name').value;
+            const url = paidCheckbox.checked
+                ? `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid?${params}`
+                : `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?${params}`;
 
             const confirmationText = `Are you sure you want to submit the following data?<br><br>${params}`;
             confirmationMessage.innerHTML = confirmationText;
             confirmationMessage.classList.remove('hidden');
 
             if (confirm('Are you sure?')) {
-                fetch(url + '?' + params, {
+                fetch(url, {
                     mode: 'no-cors'
                 })
                     .then((response) => {
