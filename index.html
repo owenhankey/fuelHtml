@@ -74,6 +74,13 @@
         .view-btn:hover {
             background-color: #555;
         }
+
+        #dataContainer {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #fff;
+        }
     </style>
 </head>
 
@@ -111,11 +118,107 @@
         </div>
 
         <button class="submit-btn" type="submit">Submit</button>
-        <button class="view-btn" onclick="window.location.href='another-page.html'">View Data</button>
+        <button class="view-btn" id="viewDataBtn">View Data</button>
     </form>
 
+    <div id="dataContainer"></div>
+
     <script>
-        // JavaScript code here...
+        const expenseForm = document.getElementById("expenseForm");
+        const dataContainer = document.getElementById("dataContainer");
+        const viewDataBtn = document.getElementById("viewDataBtn");
+
+        expenseForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            // Form submission code...
+            // ...
+
+            // Reset the form and other necessary actions
+            expenseForm.reset();
+            costGroup.style.display = "none";
+            totalPaidGroup.style.display = "none";
+            totalKmsInput.disabled = false;
+            kmsInput.disabled = false;
+            fuelEconomyInput.disabled = false;
+        });
+
+        viewDataBtn.addEventListener("click", function () {
+            // Send GET request to retrieve data
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const responseData = JSON.parse(xhr.responseText);
+                    displayData(responseData);
+                }
+            };
+            xhr.send();
+        });
+
+        function displayData(data) {
+            // Clear previous data
+            dataContainer.innerHTML = "";
+
+            if (data.length === 0) {
+                const noDataMsg = document.createElement("p");
+                noDataMsg.textContent = "No data available.";
+                dataContainer.appendChild(noDataMsg);
+            } else {
+                const table = document.createElement("table");
+                table.style.width = "100%";
+                table.style.borderCollapse = "collapse";
+
+                // Table header
+                const tableHeader = document.createElement("tr");
+                for (const key in data[0]) {
+                    const th = document.createElement("th");
+                    th.textContent = key;
+                    th.style.padding = "8px";
+                    th.style.border = "1px solid #ddd";
+                    tableHeader.appendChild(th);
+                }
+                table.appendChild(tableHeader);
+
+                // Table rows
+                for (let i = 0; i < data.length; i++) {
+                    const rowData = data[i];
+                    const tableRow = document.createElement("tr");
+                    for (const key in rowData) {
+                        const td = document.createElement("td");
+                        td.textContent = rowData[key];
+                        td.style.padding = "8px";
+                        td.style.border = "1px solid #ddd";
+                        tableRow.appendChild(td);
+                    }
+                    table.appendChild(tableRow);
+                }
+
+                dataContainer.appendChild(table);
+            }
+        }
+
+        const paidCheckbox = document.getElementById("paid");
+        const costGroup = document.getElementById("costGroup");
+        const totalPaidGroup = document.getElementById("totalPaidGroup");
+        const totalKmsInput = document.getElementById("totalKms");
+        const kmsInput = document.getElementById("kms");
+        const fuelEconomyInput = document.getElementById("fuelEconomy");
+
+        paidCheckbox.addEventListener("change", function () {
+            if (paidCheckbox.checked) {
+                costGroup.style.display = "block";
+                totalPaidGroup.style.display = "block";
+                totalKmsInput.disabled = true;
+                kmsInput.disabled = true;
+                fuelEconomyInput.disabled = true;
+            } else {
+                costGroup.style.display = "none";
+                totalPaidGroup.style.display = "none";
+                totalKmsInput.disabled = false;
+                kmsInput.disabled = false;
+                fuelEconomyInput.disabled = false;
+            }
+        });
     </script>
 </body>
 
