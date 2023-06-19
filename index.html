@@ -134,12 +134,12 @@
             <input type="checkbox" id="paid" name="paid">
         </div>
 
-        <div class="form-row" id="costGroup">
+        <div class="form-row" id="costGroup" style="display: none;">
             <label for="cost">Cost (€/litre):</label>
             <input type="number" id="cost" name="cost" step="any">
         </div>
 
-        <div class="form-row" id="totalPaidGroup">
+        <div class="form-row" id="totalPaidGroup" style="display: none;">
             <label for="totalPaid">Total Paid:</label>
             <input type="number" id="totalPaid" name="totalPaid" step="any">
         </div>
@@ -169,18 +169,11 @@
         const paidCheckbox = document.getElementById("paid");
         const costGroup = document.getElementById("costGroup");
         const totalPaidGroup = document.getElementById("totalPaidGroup");
-        const costInput = document.getElementById("cost");
-        const totalPaidInput = document.getElementById("totalPaid");
 
         paidCheckbox.addEventListener("change", function () {
             const isChecked = paidCheckbox.checked;
             costGroup.style.display = isChecked ? "block" : "none";
             totalPaidGroup.style.display = isChecked ? "block" : "none";
-
-            if (!isChecked) {
-                costInput.value = "";
-                totalPaidInput.value = "";
-            }
         });
 
         expenseForm.addEventListener("submit", function (e) {
