@@ -2,6 +2,52 @@
 <html>
 <head>
   <title>Fuel Payment Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="checkbox"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     function submitForm() {
@@ -44,22 +90,22 @@
   <h1>Fuel Payment Form</h1>
   <form id="fuelForm">
     <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required><br><br>
+    <input type="text" id="name" name="name" required>
     
     <label for="kms">KMs:</label>
-    <input type="number" id="kms" name="kms" required><br><br>
+    <input type="number" id="kms" name="kms" required>
     
     <label for="fuelEconomy">Fuel Economy:</label>
-    <input type="number" id="fuelEconomy" name="fuelEconomy" required><br><br>
+    <input type="number" id="fuelEconomy" name="fuelEconomy" required>
     
     <label for="totalKms">Total KMs:</label>
-    <input type="number" id="totalKms" name="totalKms" required><br><br>
+    <input type="number" id="totalKms" name="totalKms" required>
     
     <label for="paid">Paid:</label>
-    <input type="checkbox" id="paid" name="paid"><br><br>
+    <input type="checkbox" id="paid" name="paid">
     
     <label for="cost">Cost:</label>
-    <input type="number" id="cost" name="cost"><br><br>
+    <input type="number" id="cost" name="cost">
     
     <button type="button" onclick="submitForm()">Submit</button>
   </form>
