@@ -134,97 +134,75 @@
             <input type="checkbox" id="paid" name="paid">
         </div>
 
-        <div class="form-row" id="costGroup" style="display: none;">
+        <div class="form-row" id="costGroup">
             <label for="cost">Cost (€/litre):</label>
-            <input type="number" id="cost" name="cost" step="any" disabled>
+            <input type="number" id="cost" name="cost" step="any">
         </div>
 
-        <div class="form-row" id="totalPaidGroup" style="display: none;">
+        <div class="form-row" id="totalPaidGroup">
             <label for="totalPaid">Total Paid:</label>
-            <input type="number" id="totalPaid" name="totalPaid" step="any" disabled>
+            <input type="number" id="totalPaid" name="totalPaid" step="any">
         </div>
 
-        <button class="submit-btn" type="submit">Submit</button>
-        <button class="view-btn" id="viewDataBtn">View Data</button>
+        <button type="submit" class="submit-btn">Submit</button>
     </form>
 
-    <table class="data-table" id="dataTable" style="display: none;">
+    <table id="expenseTable" class="data-table">
         <thead>
             <tr>
+                <th class="header-cell">Date</th>
                 <th class="header-cell">Name</th>
                 <th class="header-cell">Kilometers</th>
-                <th class="header-cell">Fuel Economy</th>
-                <th class="header-cell">Total Kilometers</th>
+                <th class="header-cell">Fuel Economy (l/100km)</th>
                 <th class="header-cell">Paid</th>
-                <th class="header-cell">Cost</th>
+                <th class="header-cell">Cost (€/litre)</th>
                 <th class="header-cell">Total Paid</th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+        </tbody>
     </table>
 
     <script>
         const expenseForm = document.getElementById("expenseForm");
-        const viewDataBtn = document.getElementById("viewDataBtn");
-        const dataTable = document.getElementById("dataTable");
+        const expenseTable = document.getElementById("expenseTable");
         const paidCheckbox = document.getElementById("paid");
+        const costGroup = document.getElementById("costGroup");
+        const totalPaidGroup = document.getElementById("totalPaidGroup");
         const costInput = document.getElementById("cost");
         const totalPaidInput = document.getElementById("totalPaid");
-        const kmsInput = document.getElementById("kms");
-        const fuelEconomyInput = document.getElementById("fuelEconomy");
 
         paidCheckbox.addEventListener("change", function () {
             const isChecked = paidCheckbox.checked;
-            costInput.disabled = !isChecked;
-            totalPaidInput.disabled = !isChecked;
-            kmsInput.disabled = isChecked;
-            fuelEconomyInput.disabled = isChecked;
+            costGroup.style.display = isChecked ? "block" : "none";
+            totalPaidGroup.style.display = isChecked ? "block" : "none";
 
             if (!isChecked) {
                 costInput.value = "";
                 totalPaidInput.value = "";
-                kmsInput.value = "";
-                fuelEconomyInput.value = "";
             }
         });
 
-        expenseForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            const name = document.getElementById("name").value;
-            const kms = parseFloat(document.getElementById("kms").value);
-            const fuelEconomy = parseFloat(document.getElementById("fuelEconomy").value);
-            const paid = document.getElementById("paid").checked;
-            const cost = paid ? parseFloat(document.getElementById("cost").value) : null;
-            const totalPaid = paid ? parseFloat(document.getElementById("totalPaid").value) : null;
-
-            const formData = {
-                name: name,
-                kms: kms,
-                fuelEconomy: fuelEconomy,
-                paid: paid,
-                cost: cost,
-                totalPaid: totalPaid
-            };
-
-            console.log(formData); // Display form data in the console
-
-            if (confirm("Are you sure you want to submit the following data?\n\n" + JSON.stringify(formData, null, 2))) {
-                if (paid) {
-                    const params = new URLSearchParams(formData).toString();
-                    const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid?${params}`;
-                    window.location.href = url;
-                } else {
-                    const params = new URLSearchParams(formData).toString();
-                    const url = `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?${params}`;
-                    window.location.href = url;
-                }
-            }
+        expenseForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const formData = new FormData(expenseForm);
+            const entry = Object.fromEntries(formData.entries());
+            addFuelEntry(entry);
+            expenseForm.reset();
         });
 
-        viewDataBtn.addEventListener("click", function () {
-            dataTable.style.display = "block";
-        });
+        function addFuelEntry(entry) {
+            const tableBody = expenseTable.querySelector("tbody");
+            const row = document.createElement("tr");
 
+            Object.values(entry).forEach(function (value) {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+                row.appendChild(cell);
+            });
+
+            tableBody.appendChild(row);
+        }
     </script>
 </body>
 
