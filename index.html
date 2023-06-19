@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Expense Form</title>
+  <script>
+    function toggleFields() {
+      const paidCheckbox = document.getElementById("paid");
+      const totalPaidField = document.getElementById("totalPaid");
+      const costField = document.getElementById("cost");
+      const kmsField = document.getElementById("kms");
+      const fuelField = document.getElementById("fuel");
+      const totalKmsField = document.getElementById("totalKms");
+
+      if (paidCheckbox.checked) {
+        totalPaidField.required = true;
+        costField.required = true;
+        kmsField.required = false;
+        fuelField.required = false;
+        totalKmsField.required = false;
+        kmsField.disabled = true;
+        fuelField.disabled = true;
+        totalKmsField.disabled = true;
+      } else {
+        totalPaidField.required = false;
+        costField.required = false;
+        kmsField.required = true;
+        fuelField.required = true;
+        totalKmsField.required = true;
+        kmsField.disabled = false;
+        fuelField.disabled = false;
+        totalKmsField.disabled = false;
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Expense Form</h1>
+  <form>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="kms">Kilometers Driven:</label>
+    <input type="number" id="kms" name="kms" required><br><br>
+
+    <label for="fuel">Fuel Economy:</label>
+    <input type="number" id="fuel" name="fuel" required><br><br>
+
+    <label for="totalKms">Total Kilometers:</label>
+    <input type="number" id="totalKms" name="totalKms" required><br><br>
+
+    <label for="paid">Paid:</label>
+    <input type="checkbox" id="paid" name="paid" onclick="toggleFields()"><br><br>
+
+    <label for="totalPaid">Total Paid:</label>
+    <input type="number" id="totalPaid" name="totalPaid" disabled><br><br>
+
+    <label for="cost">Cost:</label>
+    <input type="number" id="cost" name="cost" disabled><br><br>
+
+    <input type="submit" value="Submit">
+  </form>
+</body>
+</html>
