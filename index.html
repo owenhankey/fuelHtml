@@ -170,16 +170,21 @@
         const paidCheckbox = document.getElementById("paid");
         const costInput = document.getElementById("cost");
         const totalPaidInput = document.getElementById("totalPaid");
+        const kmsInput = document.getElementById("kms");
+        const fuelEconomyInput = document.getElementById("fuelEconomy");
 
         paidCheckbox.addEventListener("change", function () {
             const isChecked = paidCheckbox.checked;
+            costInput.disabled = !isChecked;
+            totalPaidInput.disabled = !isChecked;
+            kmsInput.disabled = isChecked;
+            fuelEconomyInput.disabled = isChecked;
 
-            if (isChecked) {
-                costInput.removeAttribute("disabled");
-                totalPaidInput.removeAttribute("disabled");
-            } else {
-                costInput.setAttribute("disabled", true);
-                totalPaidInput.setAttribute("disabled", true);
+            if (!isChecked) {
+                costInput.value = "";
+                totalPaidInput.value = "";
+                kmsInput.value = "";
+                fuelEconomyInput.value = "";
             }
         });
 
