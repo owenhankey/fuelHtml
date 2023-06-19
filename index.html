@@ -183,15 +183,19 @@
                 fetch(url + '?' + params, {
                     mode: 'no-cors'
                 })
-                    .then(() => {
-                        confirmationMessage.innerHTML = 'Data submitted successfully!';
-                        if (!paidCheckbox.checked) {
-                            const costPerLitre = 1.55;
-                            const distance = parseFloat(kmsInput.value);
-                            const fuelEconomy = parseFloat(fuelEconomyInput.value);
-                            const fuelConsumed = distance * (fuelEconomy / 100);
-                            const tripCost = fuelConsumed * costPerLitre;
-                            confirmationMessage.innerHTML += `<br>Your trip cost was approximately €${tripCost.toFixed(2)}.`;
+                    .then((response) => {
+                        if (response.ok) {
+                            confirmationMessage.innerHTML = 'Data submitted successfully!';
+                            if (!paidCheckbox.checked) {
+                                const costPerLitre = 1.55;
+                                const distance = parseFloat(kmsInput.value);
+                                const fuelEconomy = parseFloat(fuelEconomyInput.value);
+                                const fuelConsumed = distance * (fuelEconomy / 100);
+                                const tripCost = fuelConsumed * costPerLitre;
+                                confirmationMessage.innerHTML += `<br>Your trip cost was approximately €${tripCost.toFixed(2)}.`;
+                            }
+                        } else {
+                            confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
                         }
                         console.log('Request sent successfully.');
                     })
