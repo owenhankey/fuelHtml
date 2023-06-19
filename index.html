@@ -173,12 +173,13 @@
 
         paidCheckbox.addEventListener("change", function () {
             const isChecked = paidCheckbox.checked;
-            costInput.disabled = !isChecked;
-            totalPaidInput.disabled = !isChecked;
 
-            if (!isChecked) {
-                costInput.value = "";
-                totalPaidInput.value = "";
+            if (isChecked) {
+                costInput.removeAttribute("disabled");
+                totalPaidInput.removeAttribute("disabled");
+            } else {
+                costInput.setAttribute("disabled", true);
+                totalPaidInput.setAttribute("disabled", true);
             }
         });
 
