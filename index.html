@@ -99,6 +99,15 @@
             font-size: 14px;
         }
 
+        .error-message {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #f00;
+            background-color: #ffebeb;
+            color: #f00;
+            font-size: 14px;
+        }
+
     </style>
 </head>
 
@@ -122,7 +131,7 @@
         </div>
 
         <div class="form-row">
-            <label for="fuelEconomy">Fuel Economy (l/100km):</label>
+            <label for="fuelEconomy">Fuel Economy (litres/100km):</label>
             <input type="number" id="fuelEconomy" name="fuelEconomy" step="any" required>
         </div>
 
@@ -145,6 +154,7 @@
     </form>
 
     <div id="confirmationMessage" class="confirmation-message hidden"></div>
+    <div id="errorMessage" class="error-message hidden"></div>
 
     <script>
         const expenseForm = document.getElementById('expenseForm');
@@ -154,6 +164,7 @@
         const kmsInput = document.getElementById('kms');
         const fuelEconomyInput = document.getElementById('fuelEconomy');
         const confirmationMessage = document.getElementById('confirmationMessage');
+        const errorMessage = document.getElementById('errorMessage');
 
         paidCheckbox.addEventListener('change', function () {
             if (this.checked) {
@@ -173,38 +184,32 @@
             event.preventDefault();
             const formData = new FormData(this);
             const params = new URLSearchParams(formData).toString();
-            const name = document.getElementById('name').value;
-            const url = paidCheckbox.checked
-                ? `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid?${params}`
-                : `https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy?${params}`;
+            const url = paidCheckbox.checked ?
+                'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid' :
+                'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
             const confirmationText = `Are you sure you want to submit the following data?<br><br>${params}`;
             confirmationMessage.innerHTML = confirmationText;
             confirmationMessage.classList.remove('hidden');
 
             if (confirm('Are you sure?')) {
-                fetch(url, {
-                    mode: 'no-cors'
-                })
-                    .then((response) => {
+                fetch(url + '?' + params, { mode: 'no-cors' })
+                    .then(response => {
                         if (response.ok) {
-                            confirmationMessage.innerHTML = 'Data submitted successfully!';
-                            if (!paidCheckbox.checked) {
-                                const costPerLitre = 1.55;
-                                const distance = parseFloat(kmsInput.value);
-                                const fuelEconomy = parseFloat(fuelEconomyInput.value);
-                                const fuelConsumed = distance * (fuelEconomy / 100);
-                                const tripCost = fuelConsumed * costPerLitre;
-                                confirmationMessage.innerHTML += `<br>Your trip cost was approximately €${tripCost.toFixed(2)}.`;
+                            if (paidCheckbox.checked) {
+                                const tripCost = parseFloat(kmsInput.value) * parseFloat(fuelEconomyInput.value) * 1.55;
+                                confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
+                            } else {
+                                confirmationMessage.innerHTML = 'Data submitted successfully!';
                             }
                         } else {
-                            confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
+                            throw new Error(response.statusText);
                         }
-                        console.log('Request sent successfully.');
                     })
                     .catch(error => {
-                        console.error(error);
-                        confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
+                        errorMessage.innerHTML = `An error occurred while submitting the data: ${error.message}`;
+                        errorMessage.classList.remove('hidden');
+                        confirmationMessage.classList.add('hidden');
                     });
             } else {
                 confirmationMessage.classList.add('hidden');
