@@ -17,8 +17,33 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
     .form-group {
       margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group select,
+    .form-group input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .form-group span {
+      font-size: 14px;
+      color: #888;
     }
 
     .checkbox-group {
@@ -30,11 +55,26 @@
       margin-left: 10px;
     }
 
-    .success {
+    .submit-btn {
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .message {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .message.success {
       color: green;
     }
 
-    .error {
+    .message.error {
       color: red;
     }
   </style>
@@ -72,20 +112,19 @@
         <input type="number" id="totalPaid" step="0.01" min="0" required>
       </div>
       <div class="form-group">
-        <label for="cost">Cost:</label>
-        <input type="number" id="cost" step="0.01" min="0">
+        <label>Cost:</label>
+        <input type="number" id="cost" step="0.01" min="0" required>
         <span>(€/litre)</span>
       </div>
-      <div class="form-group">
-        <label>Are you sure you want to submit the form?</label>
-        <div class="checkbox-group">
-          <input type="checkbox" id="paid">
-          <label for="paid">Paid</label>
-        </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="paid">
+        <label for="paid">Paid</label>
       </div>
-      <button type="submit">Submit</button>
+      <div class="form-group">
+        <button type="submit" class="submit-btn">Submit</button>
+      </div>
     </form>
-    <div id="message"></div>
+    <p id="message" class="message"></p>
   </div>
 
   <script>
@@ -138,7 +177,7 @@
 
     function showMessage(message, isSuccess) {
       messageElement.textContent = message;
-      messageElement.className = isSuccess ? 'success' : 'error';
+      messageElement.className = isSuccess ? 'message success' : 'message error';
     }
 
     paidElement.addEventListener('change', function () {
