@@ -105,6 +105,15 @@
             font-weight: bold;
         }
 
+        .response-data {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
     </style>
 </head>
 
@@ -152,6 +161,7 @@
 
     <div id="confirmationMessage" class="confirmation-message hidden"></div>
     <div id="returnCode" class="return-code hidden"></div>
+    <div id="responseData" class="response-data hidden"></div>
 
     <script>
         const expenseForm = document.getElementById('expenseForm');
@@ -162,6 +172,7 @@
         const fuelEconomyInput = document.getElementById('fuelEconomy');
         const confirmationMessage = document.getElementById('confirmationMessage');
         const returnCodeElement = document.getElementById('returnCode');
+        const responseDataElement = document.getElementById('responseData');
 
         paidCheckbox.addEventListener('change', function () {
             if (this.checked) {
@@ -194,11 +205,13 @@
                     .then(response => {
                         const returnCode = response.status;
                         returnCodeElement.innerText = `Return Code: ${returnCode}`;
-                        return response.json();
+                        return response.text();
                     })
                     .then(data => {
                         // Handle the response data as needed
                         console.log(data);
+                        responseDataElement.innerHTML = `Response Data:\n\n${data}`;
+                        responseDataElement.classList.remove('hidden');
                         confirmationMessage.innerHTML = 'Data submitted successfully!';
                     })
                     .catch(error => {
