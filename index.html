@@ -195,7 +195,7 @@
                 ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid'
                 : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
-            const confirmationText = getReadableParams(formData);
+            const confirmationText = `Are you sure you want to submit the following data?\n\n${formatFormData(formData)}`;
 
             if (confirm(confirmationText)) {
                 const confirmationMessage = document.createElement('div');
@@ -215,67 +215,63 @@
                     })
                     .catch((error) => {
                         console.error(error);
-                        confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
+                        confirmationMessage.innerHTML = 'An error occurred while submitting the data. Please try again.';
+                    })
+                    .finally(() => {
+                        expenseForm.reset();
+                        dataTable.classList.add('hidden');
                     });
             }
         });
 
         viewDataButton.addEventListener('click', function () {
-            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
+            fetchData();
+        });
+
+        function fetchData() {
+            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid')
                 .then((response) => response.json())
                 .then((data) => {
-                    if (data && data.Items && data.Items.length > 0) {
-                        dataTableBody.innerHTML = '';
-                        data.Items.forEach((item) => {
-                            const row = document.createElement('tr');
-                            const nameCell = document.createElement('td');
-                            const priceCell = document.createElement('td');
-                            const totalOwedCell = document.createElement('td');
-
-                            nameCell.textContent = item.name;
-                            priceCell.textContent = item.price;
-                            totalOwedCell.textContent = item.totalOwed;
-
-                            row.appendChild(nameCell);
-                            row.appendChild(priceCell);
-                            row.appendChild(totalOwedCell);
-
-                            dataTableBody.appendChild(row);
-                        });
-
-                        dataTable.classList.remove('hidden');
-                    } else {
-                        dataTable.classList.add('hidden');
-                    }
+                    displayData(data);
                 })
                 .catch((error) => {
                     console.error(error);
-                    dataTable.classList.add('hidden');
                 });
-        });
+        }
 
-        function getReadableParams(formData) {
-            const name = formData.get('name');
-            const kms = formData.get('kms');
-            const fuelEconomy = formData.get('fuelEconomy');
-            const paid = formData.get('paid');
-            const cost = formData.get('cost');
-            const totalPaid = formData.get('totalPaid');
+        function displayData(data) {
+            dataTableBody.innerHTML = '';
 
-            let confirmationText = `Are you sure you want to submit the following data?\n\n`;
-            confirmationText += `Name: ${name}\n`;
-            confirmationText += `Kilometers: ${kms}\n`;
-            confirmationText += `Fuel Economy (l/100km): ${fuelEconomy}\n`;
+            for (const entry of data) {
+                const row = document.createElement('tr');
+                const nameCell = document.createElement('td');
+                const priceCell = document.createElement('td');
+                const owedCell = document.createElement('td');
 
-            if (paid) {
-                confirmationText += `Paid: Yes\n`;
-                confirmationText += `Cost (€/litre): ${cost}\n`;
-                confirmationText += `Total Paid (€): ${totalPaid}\n`;
-            } else {
-                confirmationText += `Paid: No\n`;
+                nameCell.textContent = entry.name;
+                priceCell.textContent = entry.cost;
+                owedCell.textContent = entry.totalPaid;
+
+                row.appendChild(nameCell);
+                row.appendChild(priceCell);
+                row.appendChild(owedCell);
+
+                dataTableBody.appendChild(row);
             }
 
-            return confirmationText;
+            dataTable.classList.remove('hidden');
+        }
+
+        function formatFormData(formData) {
+            const entries = formData.entries();
+            let formattedData = '';
+
+            for (const entry of entries) {
+                const [name, value] = entry;
+                formattedData += `${name}: ${value}\n`;
+            }
+
+            return formattedData;
         }
     </script>
 </body>
