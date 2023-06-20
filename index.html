@@ -221,31 +221,36 @@
         });
 
         viewDataButton.addEventListener('click', function () {
-            dataTable.classList.remove('hidden');
-            viewDataButton.disabled = true;
-
-            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelExpenses')
+            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
                 .then((response) => response.json())
                 .then((data) => {
-                    for (const expense of data) {
-                        const row = document.createElement('tr');
-                        const nameCell = document.createElement('td');
-                        const pricePerLitreCell = document.createElement('td');
-                        const totalOwedCell = document.createElement('td');
+                    if (data && data.Items && data.Items.length > 0) {
+                        dataTableBody.innerHTML = '';
+                        data.Items.forEach((item) => {
+                            const row = document.createElement('tr');
+                            const nameCell = document.createElement('td');
+                            const priceCell = document.createElement('td');
+                            const totalOwedCell = document.createElement('td');
 
-                        nameCell.textContent = expense.name;
-                        pricePerLitreCell.textContent = expense.pricePerLitre;
-                        totalOwedCell.textContent = expense.totalOwed;
+                            nameCell.textContent = item.name;
+                            priceCell.textContent = item.price;
+                            totalOwedCell.textContent = item.totalOwed;
 
-                        row.appendChild(nameCell);
-                        row.appendChild(pricePerLitreCell);
-                        row.appendChild(totalOwedCell);
+                            row.appendChild(nameCell);
+                            row.appendChild(priceCell);
+                            row.appendChild(totalOwedCell);
 
-                        dataTableBody.appendChild(row);
+                            dataTableBody.appendChild(row);
+                        });
+
+                        dataTable.classList.remove('hidden');
+                    } else {
+                        dataTable.classList.add('hidden');
                     }
                 })
                 .catch((error) => {
                     console.error(error);
+                    dataTable.classList.add('hidden');
                 });
         });
 
@@ -257,21 +262,20 @@
             const cost = formData.get('cost');
             const totalPaid = formData.get('totalPaid');
 
-            let readableParams = `Are you sure you want to submit the following data?\n\n`;
-
-            readableParams += `Name: ${name}\n`;
-            readableParams += `Kilometers: ${kms}\n`;
-            readableParams += `Fuel Economy (l/100km): ${fuelEconomy}\n`;
+            let confirmationText = `Are you sure you want to submit the following data?\n\n`;
+            confirmationText += `Name: ${name}\n`;
+            confirmationText += `Kilometers: ${kms}\n`;
+            confirmationText += `Fuel Economy (l/100km): ${fuelEconomy}\n`;
 
             if (paid) {
-                readableParams += `Paid: Yes\n`;
-                readableParams += `Cost (€/litre): ${cost}\n`;
-                readableParams += `Total Paid (€): ${totalPaid}\n`;
+                confirmationText += `Paid: Yes\n`;
+                confirmationText += `Cost (€/litre): ${cost}\n`;
+                confirmationText += `Total Paid (€): ${totalPaid}\n`;
             } else {
-                readableParams += `Paid: No\n`;
+                confirmationText += `Paid: No\n`;
             }
 
-            return readableParams;
+            return confirmationText;
         }
     </script>
 </body>
