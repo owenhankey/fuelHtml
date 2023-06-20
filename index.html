@@ -187,68 +187,63 @@
             }
         });
 
-       expenseForm.addEventListener('submit', function (event) {
-  event.preventDefault();
-  const formData = new FormData(this);
-  const params = Array.from(formData.entries())
-    .map(([key, value]) => `${key}: ${value}`)
-    .join('\n');
+        expenseForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const params = Array.from(formData.entries())
+              .map(([key, value]) => `${key}: ${value}`)
+              .join('\n');
+          
+            const url = paidCheckbox.checked
+              ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid'
+              : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
+          
+            const confirmationText = `Are you sure you want to submit the following data?\n\n${params}`;
+          
+            if (confirm(confirmationText)) {
+              const confirmationMessage = document.createElement('div');
+              confirmationMessage.classList.add('confirmation-message');
+              confirmationMessage.innerHTML = 'Submitting data...';
+          
+              document.body.appendChild(confirmationMessage);
+          
+              fetch(url + '?' + params, { mode: 'no-cors' })
+                .then(() => {
+                  if (!paidCheckbox.checked) {
+                    const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * 1.55;
+                    confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
+                  } else {
+                    confirmationMessage.innerHTML = 'Data submitted successfully!';
+                  }
+                })
+                .catch(() => {
+                  confirmationMessage.innerHTML = 'Failed to submit data.';
+                });
+            }
+        });
 
-  const url = paidCheckbox.checked
-    ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid'
-    : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
-
-  const confirmationText = `Are you sure you want to submit the following data?\n\n${params}`;
-
-  if (confirm(confirmationText)) {
-    const confirmationMessage = document.createElement('div');
-    confirmationMessage.classList.add('confirmation-message');
-    confirmationMessage.innerHTML = 'Submitting data...';
-
-    document.body.appendChild(confirmationMessage);
-
-    fetch(url + '?' + params, { mode: 'no-cors' })
-      .then(() => {
-        if (!paidCheckbox.checked) {
-          const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * 1.55;
-          confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
-        } else {
-          confirmationMessage.innerHTML = 'Data submitted successfully!';
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
-      });
-  }
-});
         viewDataButton.addEventListener('click', function () {
             fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
                 .then(response => response.json())
                 .then(data => {
                     dataTableBody.innerHTML = '';
-                    data.forEach(item => {
-                        const row = document.createElement('tr');
+                    data.forEach(row => {
+                        const newRow = document.createElement('tr');
                         const nameCell = document.createElement('td');
                         const priceCell = document.createElement('td');
-                        const totalOwedCell = document.createElement('td');
-
-                        nameCell.textContent = item.Name;
-                        priceCell.textContent = item.pricePerLitre || '';
-                        totalOwedCell.textContent = item.totalOwed || '';
-
-                        row.appendChild(nameCell);
-                        row.appendChild(priceCell);
-                        row.appendChild(totalOwedCell);
-
-                        dataTableBody.appendChild(row);
+                        const totalCell = document.createElement('td');
+                        nameCell.innerText = row.name;
+                        priceCell.innerText = row.pricePerLitre;
+                        totalCell.innerText = row.totalOwed;
+                        newRow.appendChild(nameCell);
+                        newRow.appendChild(priceCell);
+                        newRow.appendChild(totalCell);
+                        dataTableBody.appendChild(newRow);
                     });
-
                     dataTable.classList.remove('hidden');
                 })
-                .catch(error => {
-                    console.error(error);
-                    alert('An error occurred while retrieving data.');
+                .catch(() => {
+                    alert('Failed to fetch data.');
                 });
         });
     </script>
