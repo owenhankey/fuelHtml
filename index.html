@@ -190,12 +190,13 @@
         expenseForm.addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = new FormData(this);
+            const readableParams = getReadableParams(formData);
             const params = new URLSearchParams(formData).toString();
             const url = paidCheckbox.checked
                 ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid'
                 : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
-            const confirmationText = `Are you sure you want to submit the following data?\n\n${getReadableParams(formData)}`;
+            const confirmationText = `Are you sure you want to submit the following data?\n\n${readableParams}`;
 
             if (confirm(confirmationText)) {
                 const confirmationMessage = document.createElement('div');
@@ -213,54 +214,37 @@
                             confirmationMessage.innerHTML = 'Data submitted successfully!';
                         }
                     })
-                    .catch((error) => {
-                        console.error(error);
-                        confirmationMessage.innerHTML = 'An error occurred while submitting data.';
-                    })
-                    .finally(() => {
-                        expenseForm.reset();
-                        expenseForm.classList.add('hidden');
-                        viewDataButton.classList.remove('hidden');
+                    .catch(() => {
+                        confirmationMessage.innerHTML = 'Failed to submit data.';
                     });
             }
         });
 
         viewDataButton.addEventListener('click', function () {
-            dataTable.classList.remove('hidden');
-            this.classList.add('hidden');
+            if (dataTable.classList.contains('hidden')) {
+                dataTable.classList.remove('hidden');
+                viewDataButton.innerText = 'Hide Data';
+            } else {
+                dataTable.classList.add('hidden');
+                viewDataButton.innerText = 'View Data';
+            }
         });
 
         function getReadableParams(formData) {
-            const readableParams = [];
+            const name = formData.get('name');
+            const kms = formData.get('kms');
+            const fuelEconomy = formData.get('fuelEconomy');
+            const paid = formData.get('paid');
+            const cost = formData.get('cost');
+            const totalPaid = formData.get('totalPaid');
 
-            for (const pair of formData.entries()) {
-                let key = pair[0];
-                let value = pair[1];
+            let params = `Name: ${name}\nKilometers: ${kms}\nFuel Economy: ${fuelEconomy} l/100km\nPaid: ${paid}`;
 
-                if (key === 'paid') {
-                    value = value ? 'Yes' : 'No';
-                }
-
-                if (key === 'kms') {
-                    value = `${value} km`;
-                }
-
-                if (key === 'fuelEconomy') {
-                    value = `${value} l/100km`;
-                }
-
-                if (key === 'cost') {
-                    value = `€${value}`;
-                }
-
-                if (key === 'totalPaid') {
-                    value = `€${value}`;
-                }
-
-                readableParams.push(`${key}: ${value}`);
+            if (paid) {
+                params += `\nCost: €${cost}\nTotal Paid: €${totalPaid}`;
             }
 
-            return readableParams.join('\n');
+            return params;
         }
     </script>
 </body>
