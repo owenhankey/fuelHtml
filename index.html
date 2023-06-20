@@ -188,35 +188,35 @@
         });
 
         expenseForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            const params = new URLSearchParams(formData).toString();
-            const url = paidCheckbox.checked ?
-                'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid' :
-                'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
+  event.preventDefault();
+  const formData = new FormData(this);
+  const params = new URLSearchParams(formData).toString();
+  const url = paidCheckbox.checked
+    ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid'
+    : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
-            const confirmationText = `Are you sure you want to submit the following data?<br><br>${params}`;
-            confirmationMessage.innerHTML = confirmationText;
-            confirmationContainer.classList.remove('hidden');
+  const confirmationText = `Are you sure you want to submit the following data?<br><br>${params}`;
+  confirmationMessage.innerHTML = confirmationText;
+  confirmationMessage.classList.remove('hidden');
 
-            if (confirm('Are you sure?')) {
-                fetch(url + '?' + params, { mode: 'no-cors' })
-                    .then(() => {
-                        if (paidCheckbox.checked) {
-                            const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * 1.55;
-                            confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
-                        } else {
-                            confirmationMessage.innerHTML = 'Data submitted successfully!';
-                        }
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
-                    });
-            } else {
-                confirmationContainer.classList.add('hidden');
-            }
-        });
+  if (confirm('Are you sure?')) {
+    fetch(url + '?' + params, { mode: 'no-cors' })
+      .then(() => {
+        if (!paidCheckbox.checked) {
+          const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * parseFloat(costInput.value);
+          confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
+        } else {
+          confirmationMessage.innerHTML = 'Data submitted successfully!';
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
+      });
+  } else {
+    confirmationMessage.classList.add('hidden');
+  }
+});
 
         viewDataButton.addEventListener('click', function () {
             fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
