@@ -190,13 +190,12 @@
         expenseForm.addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = new FormData(this);
-            const readableParams = getReadableParams(formData);
             const params = new URLSearchParams(formData).toString();
             const url = paidCheckbox.checked
                 ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid'
                 : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
-            const confirmationText = `Are you sure you want to submit the following data?\n\n${readableParams}`;
+            const confirmationText = getReadableParams(formData);
 
             if (confirm(confirmationText)) {
                 const confirmationMessage = document.createElement('div');
@@ -215,19 +214,39 @@
                         }
                     })
                     .catch(() => {
-                        confirmationMessage.innerHTML = 'Failed to submit data.';
+                        confirmationMessage.innerHTML = 'Failed to submit data. Please try again.';
                     });
             }
         });
 
         viewDataButton.addEventListener('click', function () {
-            if (dataTable.classList.contains('hidden')) {
-                dataTable.classList.remove('hidden');
-                viewDataButton.innerText = 'Hide Data';
-            } else {
-                dataTable.classList.add('hidden');
-                viewDataButton.innerText = 'View Data';
-            }
+            dataTableBody.innerHTML = '';
+
+            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid')
+                .then(response => response.json())
+                .then(data => {
+                    for (const item of data) {
+                        const row = document.createElement('tr');
+                        const nameCell = document.createElement('td');
+                        const priceCell = document.createElement('td');
+                        const totalOwedCell = document.createElement('td');
+
+                        nameCell.textContent = item.name;
+                        priceCell.textContent = item.pricePerLitre;
+                        totalOwedCell.textContent = item.totalOwed;
+
+                        row.appendChild(nameCell);
+                        row.appendChild(priceCell);
+                        row.appendChild(totalOwedCell);
+
+                        dataTableBody.appendChild(row);
+                    }
+
+                    dataTable.classList.remove('hidden');
+                })
+                .catch(() => {
+                    alert('Failed to fetch data. Please try again.');
+                });
         });
 
         function getReadableParams(formData) {
@@ -238,14 +257,17 @@
             const cost = formData.get('cost');
             const totalPaid = formData.get('totalPaid');
 
-            let params = `Name: ${name}\nKilometers: ${kms}\nFuel Economy: ${fuelEconomy} l/100km\nPaid: ${paid}`;
+            let params = `Name: ${name}\nKilometers: ${kms}\nFuel Economy: ${fuelEconomy}`;
 
-            if (paid) {
-                params += `\nCost: €${cost}\nTotal Paid: €${totalPaid}`;
+            if (paid === 'on') {
+                params += `\nPaid: Yes\nCost: €${cost}\nTotal Paid: €${totalPaid}`;
+            } else {
+                params += '\nPaid: No';
             }
 
-            return params;
+            return `Are you sure you want to submit the following data?\n\n${params}`;
         }
     </script>
 </body>
+
 </html>
