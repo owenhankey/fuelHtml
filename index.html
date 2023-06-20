@@ -195,7 +195,7 @@
     ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid'
     : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
-  const confirmationText = `Are you sure you want to submit the following data?<br><br>${params}`;
+  const confirmationText = `Are you sure you want to submit the following data?\n\n${params}`;
 
   if (confirm(confirmationText)) {
     const confirmationMessage = document.createElement('div');
