@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Fuel Expenses</title>
     <style>
@@ -71,7 +70,6 @@
         }
 
         .data-table {
-            display: none;
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
@@ -147,19 +145,18 @@
 
     <div class="confirmation-message hidden"></div>
 
-    <table class="data-table">
+    <table class="data-table hidden">
         <thead>
             <tr>
                 <th class="header-cell">Name</th>
-                <th class="header-cell">Kilometers</th>
-                <th class="header-cell">Fuel Economy (l/100km)</th>
-                <th class="header-cell">Trip Cost (€)</th>
+                <th class="header-cell">Price Per Litre</th>
+                <th class="header-cell">Total Owed</th>
             </tr>
         </thead>
         <tbody id="dataTableBody"></tbody>
     </table>
 
-    <button id="viewData">View Data</button>
+    <button id="viewDataButton">View Data</button>
 
     <script>
         const expenseForm = document.getElementById('expenseForm');
@@ -169,8 +166,9 @@
         const kmsInput = document.getElementById('kms');
         const fuelEconomyInput = document.getElementById('fuelEconomy');
         const confirmationMessage = document.querySelector('.confirmation-message');
+        const viewDataButton = document.getElementById('viewDataButton');
         const dataTableBody = document.getElementById('dataTableBody');
-        const viewDataButton = document.getElementById('viewData');
+        const dataTable = document.querySelector('.data-table');
 
         paidCheckbox.addEventListener('change', function () {
             if (this.checked) {
@@ -194,24 +192,26 @@
                 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid' :
                 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
-            const confirmationText = `Are you sure you want to submit the following data?\n\n${params}`;
-            if (confirm(confirmationText)) {
+            const confirmationText = `Are you sure you want to submit the following data?<br><br>${params}`;
+            confirmationMessage.innerHTML = confirmationText;
+            confirmationMessage.classList.remove('hidden');
+
+            if (confirm('Are you sure?')) {
                 fetch(url + '?' + params, { mode: 'no-cors' })
                     .then(() => {
                         if (paidCheckbox.checked) {
-                            const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * parseFloat(document.getElementById('cost').value);
+                            const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * 1.55;
                             confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
-                            confirmationMessage.classList.remove('hidden');
                         } else {
                             confirmationMessage.innerHTML = 'Data submitted successfully!';
-                            confirmationMessage.classList.remove('hidden');
                         }
                     })
                     .catch(error => {
                         console.error(error);
                         confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
-                        confirmationMessage.classList.remove('hidden');
                     });
+            } else {
+                confirmationMessage.classList.add('hidden');
             }
         });
 
@@ -220,24 +220,30 @@
                 .then(response => response.json())
                 .then(data => {
                     dataTableBody.innerHTML = '';
-                    data.forEach(entry => {
+                    data.forEach(item => {
                         const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${entry.name}</td>
-                            <td>${entry.kms}</td>
-                            <td>${entry.fuelEconomy}</td>
-                            <td>${entry.tripCost}</td>
-                        `;
+                        const nameCell = document.createElement('td');
+                        const priceCell = document.createElement('td');
+                        const totalOwedCell = document.createElement('td');
+
+                        nameCell.textContent = item.Name;
+                        priceCell.textContent = item.pricePerLitre || '';
+                        totalOwedCell.textContent = item.totalOwed || '';
+
+                        row.appendChild(nameCell);
+                        row.appendChild(priceCell);
+                        row.appendChild(totalOwedCell);
+
                         dataTableBody.appendChild(row);
                     });
-                    document.querySelector('.data-table').style.display = 'table';
+
+                    dataTable.classList.remove('hidden');
                 })
                 .catch(error => {
                     console.error(error);
+                    alert('An error occurred while retrieving data.');
                 });
         });
-
     </script>
 </body>
-
 </html>
