@@ -143,8 +143,6 @@
         <input type="submit" class="submit-btn" value="Submit">
     </form>
 
-    <div class="confirmation-message hidden"></div>
-
     <table class="data-table hidden">
         <thead>
             <tr>
@@ -158,6 +156,10 @@
 
     <button id="viewDataButton">View Data</button>
 
+    <div id="confirmationContainer" class="hidden">
+        <div class="confirmation-message" id="confirmationMessage"></div>
+    </div>
+
     <script>
         const expenseForm = document.getElementById('expenseForm');
         const paidCheckbox = document.getElementById('paid');
@@ -165,7 +167,8 @@
         const totalPaidGroup = document.getElementById('totalPaidGroup');
         const kmsInput = document.getElementById('kms');
         const fuelEconomyInput = document.getElementById('fuelEconomy');
-        const confirmationMessage = document.querySelector('.confirmation-message');
+        const confirmationContainer = document.getElementById('confirmationContainer');
+        const confirmationMessage = document.getElementById('confirmationMessage');
         const viewDataButton = document.getElementById('viewDataButton');
         const dataTableBody = document.getElementById('dataTableBody');
         const dataTable = document.querySelector('.data-table');
@@ -185,35 +188,36 @@
         });
 
         expenseForm.addEventListener('submit', function (event) {
-    event.preventDefault();
-    const formData = new FormData(this);
-    const params = new URLSearchParams(formData).toString();
-    const url = paidCheckbox.checked ?
-        'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid' :
-        'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
+            event.preventDefault();
+            const formData = new FormData(this);
+            const params = new URLSearchParams(formData).toString();
+            const url = paidCheckbox.checked ?
+                'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid' :
+                'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
 
-    const confirmationText = `Are you sure you want to submit the following data?<br><br>${params}`;
-    confirmationMessage.innerHTML = confirmationText;
-    confirmationMessage.classList.remove('hidden');
+            const confirmationText = `Are you sure you want to submit the following data?<br><br>${params}`;
+            confirmationMessage.innerHTML = confirmationText;
+            confirmationContainer.classList.remove('hidden');
 
-    if (confirm('Are you sure?')) {
-        fetch(url + '?' + params, { mode: 'no-cors' })
-            .then(() => {
-                if (paidCheckbox.checked) {
-                    const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * 1.55;
-                    confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
-                } else {
-                    confirmationMessage.innerHTML = 'Data submitted successfully!';
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
-            });
-    } else {
-        confirmationMessage.classList.add('hidden');
-    }
-});
+            if (confirm('Are you sure?')) {
+                fetch(url + '?' + params, { mode: 'no-cors' })
+                    .then(() => {
+                        if (paidCheckbox.checked) {
+                            const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * 1.55;
+                            confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
+                        } else {
+                            confirmationMessage.innerHTML = 'Data submitted successfully!';
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
+                    });
+            } else {
+                confirmationContainer.classList.add('hidden');
+            }
+        });
+
         viewDataButton.addEventListener('click', function () {
             fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
                 .then(response => response.json())
