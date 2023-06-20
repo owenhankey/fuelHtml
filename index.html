@@ -190,62 +190,78 @@
         expenseForm.addEventListener('submit', function (event) {
             event.preventDefault();
             const formData = new FormData(this);
-            const params = Array.from(formData.entries())
-              .map(([key, value]) => `${key}: ${value}`)
-              .join('\n');
-          
+            const params = new URLSearchParams(formData).toString();
             const url = paidCheckbox.checked
-              ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid'
-              : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
-          
-            const confirmationText = `Are you sure you want to submit the following data?\n\n${params}`;
-          
+                ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid'
+                : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
+
+            const confirmationText = `Are you sure you want to submit the following data?\n\n${getReadableParams(formData)}`;
+
             if (confirm(confirmationText)) {
-              const confirmationMessage = document.createElement('div');
-              confirmationMessage.classList.add('confirmation-message');
-              confirmationMessage.innerHTML = 'Submitting data...';
-          
-              document.body.appendChild(confirmationMessage);
-          
-              fetch(url + '?' + params, { mode: 'no-cors' })
-                .then(() => {
-                  if (!paidCheckbox.checked) {
-                    const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * 1.55;
-                    confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
-                  } else {
-                    confirmationMessage.innerHTML = 'Data submitted successfully!';
-                  }
-                })
-                .catch(() => {
-                  confirmationMessage.innerHTML = 'Failed to submit data.';
-                });
+                const confirmationMessage = document.createElement('div');
+                confirmationMessage.classList.add('confirmation-message');
+                confirmationMessage.innerHTML = 'Submitting data...';
+
+                document.body.appendChild(confirmationMessage);
+
+                fetch(url + '?' + params, { mode: 'no-cors' })
+                    .then(() => {
+                        if (!paidCheckbox.checked) {
+                            const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * 1.55;
+                            confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
+                        } else {
+                            confirmationMessage.innerHTML = 'Data submitted successfully!';
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        confirmationMessage.innerHTML = 'An error occurred while submitting data.';
+                    })
+                    .finally(() => {
+                        expenseForm.reset();
+                        expenseForm.classList.add('hidden');
+                        viewDataButton.classList.remove('hidden');
+                    });
             }
         });
 
         viewDataButton.addEventListener('click', function () {
-            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
-                .then(response => response.json())
-                .then(data => {
-                    dataTableBody.innerHTML = '';
-                    data.forEach(row => {
-                        const newRow = document.createElement('tr');
-                        const nameCell = document.createElement('td');
-                        const priceCell = document.createElement('td');
-                        const totalCell = document.createElement('td');
-                        nameCell.innerText = row.name;
-                        priceCell.innerText = row.pricePerLitre;
-                        totalCell.innerText = row.totalOwed;
-                        newRow.appendChild(nameCell);
-                        newRow.appendChild(priceCell);
-                        newRow.appendChild(totalCell);
-                        dataTableBody.appendChild(newRow);
-                    });
-                    dataTable.classList.remove('hidden');
-                })
-                .catch(() => {
-                    alert('Failed to fetch data.');
-                });
+            dataTable.classList.remove('hidden');
+            this.classList.add('hidden');
         });
+
+        function getReadableParams(formData) {
+            const readableParams = [];
+
+            for (const pair of formData.entries()) {
+                let key = pair[0];
+                let value = pair[1];
+
+                if (key === 'paid') {
+                    value = value ? 'Yes' : 'No';
+                }
+
+                if (key === 'kms') {
+                    value = `${value} km`;
+                }
+
+                if (key === 'fuelEconomy') {
+                    value = `${value} l/100km`;
+                }
+
+                if (key === 'cost') {
+                    value = `€${value}`;
+                }
+
+                if (key === 'totalPaid') {
+                    value = `€${value}`;
+                }
+
+                readableParams.push(`${key}: ${value}`);
+            }
+
+            return readableParams.join('\n');
+        }
     </script>
 </body>
 </html>
