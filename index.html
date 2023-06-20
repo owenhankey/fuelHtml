@@ -215,63 +215,47 @@
                     })
                     .catch((error) => {
                         console.error(error);
-                        confirmationMessage.innerHTML = 'An error occurred while submitting the data. Please try again.';
-                    })
-                    .finally(() => {
-                        expenseForm.reset();
-                        dataTable.classList.add('hidden');
+                        confirmationMessage.innerHTML = 'An error occurred while submitting data.';
                     });
             }
         });
 
         viewDataButton.addEventListener('click', function () {
-            fetchData();
+            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
+                .then(response => response.json())
+                .then(data => {
+                    populateDataTable(data);
+                    dataTable.classList.remove('hidden');
+                })
+                .catch(error => console.error(error));
         });
 
-        function fetchData() {
-            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
-                .then((response) => response.json())
-                .then((data) => {
-                    displayData(data);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+        function formatFormData(formData) {
+            let formattedData = '';
+            for (const pair of formData.entries()) {
+                formattedData += `${pair[0]}: ${pair[1]}\n`;
+            }
+            return formattedData;
         }
 
-        function displayData(data) {
+        function populateDataTable(data) {
             dataTableBody.innerHTML = '';
-
-            for (const entry of data) {
+            data.forEach(entry => {
                 const row = document.createElement('tr');
                 const nameCell = document.createElement('td');
                 const priceCell = document.createElement('td');
-                const owedCell = document.createElement('td');
+                const totalCell = document.createElement('td');
 
                 nameCell.textContent = entry.name;
-                priceCell.textContent = entry.cost;
-                owedCell.textContent = entry.totalPaid;
+                priceCell.textContent = entry.price;
+                totalCell.textContent = entry.total;
 
                 row.appendChild(nameCell);
                 row.appendChild(priceCell);
-                row.appendChild(owedCell);
+                row.appendChild(totalCell);
 
                 dataTableBody.appendChild(row);
-            }
-
-            dataTable.classList.remove('hidden');
-        }
-
-        function formatFormData(formData) {
-            const entries = formData.entries();
-            let formattedData = '';
-
-            for (const entry of entries) {
-                const [name, value] = entry;
-                formattedData += `${name}: ${value}\n`;
-            }
-
-            return formattedData;
+            });
         }
     </script>
 </body>
