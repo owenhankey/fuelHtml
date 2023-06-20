@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Fuel Expenses</title>
     <style>
@@ -100,8 +99,35 @@
         }
 
     </style>
+    <script>
+        function fetchData() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    var table = document.getElementById("fuelTable");
+                    
+                    // Clear existing table rows
+                    while (table.rows.length > 1) {
+                        table.deleteRow(1);
+                    }
+                    
+                    // Add new rows with the retrieved data
+                    for (var i = 0; i < data.length; i++) {
+                        var row = table.insertRow(-1);
+                        var nameCell = row.insertCell(0);
+                        var totalOwedCell = row.insertCell(1);
+                        
+                        nameCell.innerHTML = data[i].Name;
+                        totalOwedCell.innerHTML = data[i].totalOwed;
+                    }
+                }
+            };
+            xhr.send();
+        }
+    </script>
 </head>
-
 <body>
     <h1>Fuel Expenses</h1>
 
@@ -146,6 +172,20 @@
 
     <div id="confirmationMessage" class="confirmation-message hidden"></div>
 
+    <table id="fuelTable" class="data-table">
+        <tr>
+            <th class="header-cell">Name</th>
+            <th class="header-cell">Total Owed</th>
+        </tr>
+        <!-- Sample row for demonstration purposes -->
+        <tr>
+            <td>John Doe</td>
+            <td>50.75</td>
+        </tr>
+    </table>
+
+    <button onclick="fetchData()">View Data</button>
+
     <script>
         const expenseForm = document.getElementById('expenseForm');
         const paidCheckbox = document.getElementById('paid');
@@ -186,8 +226,6 @@
                     .then(() => {
                         if (paidCheckbox.checked) {
                             const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * 1.55;
-                            console.log(kmsInput.value);
-                            console.log(fuelEconomyInput.value);
                             confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
                         } else {
                             confirmationMessage.innerHTML = 'Data submitted successfully!';
@@ -203,5 +241,4 @@
         });
     </script>
 </body>
-
 </html>
