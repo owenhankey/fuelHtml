@@ -184,8 +184,8 @@
             if (confirm('Are you sure?')) {
                 fetch(url + '?' + params, { mode: 'no-cors' })
                     .then(() => {
-                        if (!paidCheckbox.checked) {
-                            const tripCost = (parseFloat(kmsInput.value) / 100 * parseFloat(fuelEconomyInput.value)) * 1.55;
+                        if (paidCheckbox.checked) {
+                            const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * 1.55;
                             confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
                         } else {
                             confirmationMessage.innerHTML = 'Data submitted successfully!';
