@@ -190,7 +190,10 @@
        expenseForm.addEventListener('submit', function (event) {
   event.preventDefault();
   const formData = new FormData(this);
-  const params = new URLSearchParams(formData).toString();
+  const params = Array.from(formData.entries())
+    .map(([key, value]) => `${key}: ${value}`)
+    .join('\n');
+
   const url = paidCheckbox.checked
     ? 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelPaid'
     : 'https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelEconomy';
