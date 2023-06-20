@@ -214,48 +214,55 @@
                         }
                     })
                     .catch((error) => {
-                        console.error(error);
-                        confirmationMessage.innerHTML = 'An error occurred while submitting data.';
+                        console.error('Error:', error);
+                        confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
+                    })
+                    .finally(() => {
+                        setTimeout(() => {
+                            confirmationMessage.remove();
+                            expenseForm.reset();
+                            paidCheckbox.checked = false;
+                            kmsInput.disabled = false;
+                            fuelEconomyInput.disabled = false;
+                            costGroup.classList.add('hidden');
+                            totalPaidGroup.classList.add('hidden');
+                        }, 3000);
                     });
             }
         });
 
         viewDataButton.addEventListener('click', function () {
             fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
-                .then(response => response.json())
-                .then(data => {
-                    populateDataTable(data);
-                    dataTable.classList.remove('hidden');
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.length > 0) {
+                        const rows = data.map((entry) => {
+                            return `
+                                <tr>
+                                    <td>${entry.name}</td>
+                                    <td>${entry.pricePerLitre}</td>
+                                    <td>${entry.totalOwed}</td>
+                                </tr>
+                            `;
+                        });
+
+                        dataTableBody.innerHTML = rows.join('');
+                        dataTable.classList.remove('hidden');
+                    }
                 })
-                .catch(error => console.error(error));
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
         });
 
         function formatFormData(formData) {
             let formattedData = '';
-            for (const pair of formData.entries()) {
+
+            for (const pair of formData) {
                 formattedData += `${pair[0]}: ${pair[1]}\n`;
             }
+
             return formattedData;
-        }
-
-        function populateDataTable(data) {
-            dataTableBody.innerHTML = '';
-            data.forEach(entry => {
-                const row = document.createElement('tr');
-                const nameCell = document.createElement('td');
-                const priceCell = document.createElement('td');
-                const totalCell = document.createElement('td');
-
-                nameCell.textContent = entry.name;
-                priceCell.textContent = entry.price;
-                totalCell.textContent = entry.total;
-
-                row.appendChild(nameCell);
-                row.appendChild(priceCell);
-                row.appendChild(totalCell);
-
-                dataTableBody.appendChild(row);
-            });
         }
     </script>
 </body>
