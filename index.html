@@ -97,7 +97,6 @@
             background-color: #fff;
             font-size: 14px;
         }
-
     </style>
 </head>
 
@@ -227,55 +226,43 @@
             }
         });
 
-        function formatFormData(formData) {
-            let formattedData = '';
-            for (let pair of formData.entries()) {
-                formattedData += `${pair[0]}: ${pair[1]}\n`;
-            }
-            return formattedData;
-        }
-
         viewDataButton.addEventListener('click', function () {
-            dataTable.classList.toggle('hidden');
+            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelExpenses')
+                .then(response => response.json())
+                .then(data => {
+                    dataTableBody.innerHTML = '';
+                    data.forEach(entry => {
+                        const row = document.createElement('tr');
+                        const nameCell = document.createElement('td');
+                        nameCell.textContent = entry.name;
+                        const priceCell = document.createElement('td');
+                        priceCell.textContent = entry.pricePerLitre;
+                        const totalOwedCell = document.createElement('td');
+                        totalOwedCell.textContent = entry.totalOwed;
 
-            if (!dataTable.classList.contains('hidden')) {
-                viewDataButton.textContent = 'Hide Data';
-                populateDataTable();
-            } else {
-                viewDataButton.textContent = 'View Data';
-                dataTableBody.innerHTML = '';
-            }
+                        row.appendChild(nameCell);
+                        row.appendChild(priceCell);
+                        row.appendChild(totalOwedCell);
+
+                        dataTableBody.appendChild(row);
+                    });
+
+                    dataTable.classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         });
 
-        function populateDataTable() {
-  fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
-    .then(response => response.json())
-    .then(data => {
-      dataTableBody.innerHTML = '';
+        function formatFormData(formData) {
+            let formattedData = '';
 
-      data.forEach(item => {
-        const row = document.createElement('tr');
-        const nameCell = document.createElement('td');
-        const priceCell = document.createElement('td');
-        const owedCell = document.createElement('td');
+            for (let pair of formData.entries()) {
+                formattedData += pair[0] + ': ' + pair[1] + '\n';
+            }
 
-        nameCell.textContent = item.Name; // Update this line
-        priceCell.textContent = item.pricePerLitre;
-        owedCell.textContent = item.totalOwed;
-
-        row.appendChild(nameCell);
-        row.appendChild(priceCell);
-        row.appendChild(owedCell);
-
-        dataTableBody.appendChild(row);
-      });
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      dataTableBody.innerHTML = '<tr><td colspan="3">An error occurred while fetching the data.</td></tr>';
-    });
-}
+            return formattedData;
+        }
     </script>
 </body>
-
 </html>
