@@ -204,61 +204,37 @@
 
                 document.body.appendChild(confirmationMessage);
 
-                fetch(url + '?' + params, { mode: 'no-cors' })
-                    .then(() => {
+                fetch(url + '?' + params)
+                    .then(response => response.json())
+                    .then(data => {
                         if (!paidCheckbox.checked) {
-                            const tripCost = (parseFloat(kmsInput.value) / 100) * parseFloat(fuelEconomyInput.value) * 1.55;
+                            const tripCost = data.body;
                             confirmationMessage.innerHTML = `Your trip cost was approximately €${tripCost.toFixed(2)}`;
                         } else {
                             confirmationMessage.innerHTML = 'Data submitted successfully!';
                         }
                     })
-                    .catch((error) => {
+                    .catch(error => {
                         console.error('Error:', error);
                         confirmationMessage.innerHTML = 'An error occurred while submitting the data.';
                     })
                     .finally(() => {
                         setTimeout(() => {
                             confirmationMessage.remove();
-                            expenseForm.reset();
-                            paidCheckbox.checked = false;
-                            kmsInput.disabled = false;
-                            fuelEconomyInput.disabled = false;
-                            costGroup.classList.add('hidden');
-                            totalPaidGroup.classList.add('hidden');
                         }, 3000);
                     });
             }
         });
 
         viewDataButton.addEventListener('click', function () {
-            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.length > 0) {
-                        const rows = data.map((entry) => {
-                            return `
-                                <tr>
-                                    <td>${entry.name}</td>
-                                    <td>${entry.pricePerLitre}</td>
-                                    <td>${entry.totalOwed}</td>
-                                </tr>
-                            `;
-                        });
-
-                        dataTableBody.innerHTML = rows.join('');
-                        dataTable.classList.remove('hidden');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
+            dataTable.classList.toggle('hidden');
+            viewDataButton.textContent = dataTable.classList.contains('hidden') ? 'View Data' : 'Hide Data';
         });
 
         function formatFormData(formData) {
             let formattedData = '';
 
-            for (const pair of formData) {
+            for (let pair of formData.entries()) {
                 formattedData += `${pair[0]}: ${pair[1]}\n`;
             }
 
