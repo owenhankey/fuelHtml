@@ -248,32 +248,33 @@
         });
 
         function populateDataTable() {
-            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
-                .then(response => response.json())
-                .then(data => {
-                    dataTableBody.innerHTML = '';
+  fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
+    .then(response => response.json())
+    .then(data => {
+      dataTableBody.innerHTML = '';
 
-                    data.forEach(item => {
-                        const row = document.createElement('tr');
-                        const nameCell = document.createElement('td');
-                        const priceCell = document.createElement('td');
-                        const owedCell = document.createElement('td');
+      data.forEach(item => {
+        const row = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        const priceCell = document.createElement('td');
+        const owedCell = document.createElement('td');
 
-                        nameCell.textContent = item.name;
-                        priceCell.textContent = item.pricePerLitre;
-                        owedCell.textContent = item.totalOwed;
+        nameCell.textContent = item.Name; // Update this line
+        priceCell.textContent = item.pricePerLitre;
+        owedCell.textContent = item.totalOwed;
 
-                        row.appendChild(nameCell);
-                        row.appendChild(priceCell);
-                        row.appendChild(owedCell);
+        row.appendChild(nameCell);
+        row.appendChild(priceCell);
+        row.appendChild(owedCell);
 
-                        dataTableBody.appendChild(row);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    dataTableBody.innerHTML = '<tr><td colspan="3">An error occurred while fetching the data.</td></tr>';
-                });
+        dataTableBody.appendChild(row);
+      });
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      dataTableBody.innerHTML = '<tr><td colspan="3">An error occurred while fetching the data.</td></tr>';
+    });
+}
         }
     </script>
 </body>
