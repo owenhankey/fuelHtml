@@ -246,10 +246,10 @@
                         data.forEach(entry => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
-                                <td>${entry.name}</td>
-                                <td>${entry.price_per_litre}</td>
-                                <td>${entry.total_owed}</td>
-                                <td>${formatDate(entry.timestamp)}</td>
+                                <td>${entry.Name}</td>
+                                <td>${entry.pricePerLitre}</td>
+                                <td>${entry.totalOwed}</td>
+                                <td>${formatDate(entry.date)}</td>
                             `;
                             dataTableBody.appendChild(row);
                         });
