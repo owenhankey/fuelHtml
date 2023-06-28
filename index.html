@@ -227,7 +227,7 @@
         });
 
         viewDataButton.addEventListener('click', function () {
-            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelExpenses')
+            fetch('https://vyaky9w2kl.execute-api.us-east-1.amazonaws.com/fuelData')
                 .then(response => response.json())
                 .then(data => {
                     dataTableBody.innerHTML = '';
